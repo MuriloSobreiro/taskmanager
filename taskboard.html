@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Taskboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0e0e10;
+      --surface:   #17171a;
+      --surface2:  #1e1e22;
+      --border:    #2a2a2f;
+      --text:      #e8e8ec;
+      --muted:     #6b6b75;
+      --done-text: #50505a;
+      --radius:    12px;
+      --radius-sm: 7px;
+      --accent0:   #ff6b6b;
+      --accent1:   #ffa94d;
+      --accent2:   #4ecdc4;
+      --accent3:   #a78bfa;
+      --accent4:   #60a5fa;
+      --accent5:   #34d399;
+      --accent6:   #f472b6;
+      --accent7:   #fb923c;
+      --header-h:  56px;
+      --gap:       clamp(12px, 2vw, 20px);
+      --pad:       clamp(14px, 3vw, 32px);
+      --bucket-max-h: min(520px, calc(100svh - var(--header-h) - 80px));
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 1.5vw, 15px);
+      line-height: 1.5;
+      min-height: 100svh;
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ──────────────────────────────────── */
+    header {
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--pad);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0;
+      background: rgba(14,14,16,.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100;
+      gap: 10px;
+    }
+
+    header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(.95rem, 2.5vw, 1.3rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    header h1 span { color: var(--accent1); }
+
+    .header-center {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; min-width: 0;
+    }
+
+    /* Save status pill */
+    #save-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 20px;
+      border: 1px solid var(--border);
+      font-size: 11.5px; color: var(--muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 200px; transition: border-color .3s, color .3s;
+    }
+    #save-pill.linked { border-color: #34d399; color: #34d399; }
+    #save-pill.saving { border-color: var(--accent1); color: var(--accent1); }
+    #save-pill.error  { border-color: var(--accent0); color: var(--accent0); }
+
+    .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: currentColor; flex-shrink: 0;
+    }
+    .dot.pulse { animation: pulse 2.2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+    .header-actions {
+      display: flex; gap: 7px; align-items: center; flex-shrink: 0;
+    }
+
+    /* ── BUTTONS ─────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 14px;
+      border: none; border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(11px, 1.2vw, 13px);
+      font-weight: 500; cursor: pointer;
+      transition: opacity .15s, transform .1s;
+      white-space: nowrap; min-height: 34px;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: var(--accent1); color: #0e0e10; }
+    .btn-primary:hover { opacity: .85; }
+    .btn-ghost {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: #555; }
+
+    .btn-icon {
+      background: transparent; color: var(--muted); border: none;
+      padding: 5px 7px; border-radius: 6px;
+      font-size: 13px; cursor: pointer; line-height: 1;
+      transition: color .15s, background .15s;
+      min-width: 28px; min-height: 28px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-icon:hover { color: var(--text); background: var(--border); }
+    .btn-icon.danger:hover { color: #ff6b6b; background: rgba(255,107,107,.12); }
+
+    /* ── BOARD GRID ──────────────────────────────── */
+    main {
+      padding: var(--gap) var(--pad) 60px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(clamp(260px, 30vw, 320px), 1fr));
+      gap: var(--gap);
+      align-items: start;
+    }
+
+    /* ── BUCKET CARD ─────────────────────────────── */
+    .bucket {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--accent-color, var(--accent1));
+      border-radius: var(--radius);
+      display: flex; flex-direction: column;
+      max-height: var(--bucket-max-h);
+      overflow: hidden;
+      transition: box-shadow .2s;
+    }
+    .bucket:focus-within {
+      box-shadow: 0 0 0 1px var(--accent-color, var(--accent1));
+    }
+
+    .bucket-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 12px 9px; flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .bucket-title-wrap { flex: 1; min-width: 0; }
+
+    .bucket-name {
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(11.5px, 1.2vw, 13px);
+      font-weight: 500; color: var(--text);
+      border: none; background: transparent;
+      width: 100%; outline: none; cursor: text;
+    }
+    .bucket-name:focus { color: var(--accent-color); }
+
+    .bucket-meta {
+      display: flex; align-items: center; gap: 7px; margin-top: 3px;
+    }
+    .bucket-count {
+      font-family: 'DM Mono', monospace;
+      font-size: 10.5px; color: var(--muted); white-space: nowrap;
+    }
+    .bucket-progress {
+      flex: 1; height: 3px; background: var(--border);
+      border-radius: 2px; overflow: hidden;
+    }
+    .bucket-progress-bar {
+      height: 100%; background: var(--accent-color);
+      border-radius: 2px; transition: width .4s ease;
+    }
+
+    /* ── TASK LIST ───────────────────────────────── */
+    .task-list {
+      overflow-y: auto; flex: 1; padding: 6px 0;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+    }
+    .task-list::-webkit-scrollbar { width: 3px; }
+    .task-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .task-item { padding: 2px 8px; }
+
+    .task-main {
+      display: flex; align-items: center; gap: 7px;
+      padding: 6px 5px; border-radius: var(--radius-sm);
+      transition: background .12s; min-height: 36px;
+    }
+    .task-main:hover { background: rgba(255,255,255,.04); }
+
+    .task-check {
+      appearance: none; -webkit-appearance: none;
+      width: 16px; height: 16px; min-width: 16px;
+      border: 1.5px solid var(--border); border-radius: 4px;
+      cursor: pointer; position: relative;
+      transition: background .15s, border-color .15s;
+    }
+    .task-check:hover { border-color: var(--accent-color); }
+    .task-check:checked { background: var(--accent-color); border-color: var(--accent-color); }
+    .task-check:checked::after {
+      content: ''; position: absolute; top: 2px; left: 4.5px;
+      width: 4px; height: 7px;
+      border: 1.5px solid #0e0e10;
+      border-top: none; border-left: none;
+      transform: rotate(45deg);
+    }
+
+    .task-text {
+      flex: 1; min-width: 0;
+      font-size: clamp(12px, 1.3vw, 13.5px);
+      color: var(--text); border: none; background: transparent;
+      outline: none; font-family: 'DM Sans', sans-serif;
+      cursor: text; transition: color .2s;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .task-text:focus { white-space: normal; overflow: visible; }
+    .task-item.done .task-text { color: var(--done-text); text-decoration: line-through; }
+
+    .btn-expand {
+      background: transparent; border: none; cursor: pointer;
+      color: var(--muted); padding: 3px 5px; border-radius: 4px;
+      font-size: 10px; line-height: 1; flex-shrink: 0;
+      transition: color .15s, background .15s, transform .22s cubic-bezier(.34,1.56,.64,1);
+      min-width: 24px; min-height: 24px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-expand:hover { color: var(--text); background: var(--border); }
+    .btn-expand.open { transform: rotate(180deg); color: var(--accent-color); }
+
+    .task-desc-wrap {
+      overflow: hidden; max-height: 0; opacity: 0;
+      transition: max-height .28s ease, opacity .22s;
+    }
+    .task-desc-wrap.open { max-height: 200px; opacity: 1; }
+
+    .task-desc {
+      margin: 2px 5px 8px 28px;
+      padding: 8px 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(11px, 1.2vw, 12.5px);
+      color: var(--muted); resize: none;
+      width: calc(100% - 33px); outline: none;
+      line-height: 1.55; min-height: 54px;
+      transition: border-color .15s, color .15s;
+    }
+    .task-desc:focus { border-color: var(--accent-color); color: var(--text); }
+    .task-desc::placeholder { color: #3a3a42; }
+
+    /* ── BUCKET FOOTER ───────────────────────────── */
+    .bucket-footer {
+      padding: 8px 10px 10px; flex-shrink: 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .add-task-form { display: flex; gap: 6px; }
+
+    .add-task-input {
+      flex: 1; background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 7px 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(12px, 1.2vw, 13px);
+      color: var(--text); outline: none; min-height: 34px;
+      transition: border-color .15s;
+    }
+    .add-task-input:focus { border-color: var(--accent-color); }
+    .add-task-input::placeholder { color: #3a3a42; }
+
+    .btn-add-task {
+      background: var(--accent-color); color: #0e0e10;
+      border: none; border-radius: var(--radius-sm);
+      width: 34px; height: 34px; font-size: 20px;
+      cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity .15s;
+    }
+    .btn-add-task:hover { opacity: .8; }
+
+    /* ── NEW BUCKET PLACEHOLDER ──────────────────── */
+    .bucket-new {
+      border: 1.5px dashed var(--border); border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      min-height: 90px; cursor: pointer;
+      transition: border-color .15s, background .15s, color .15s;
+      color: var(--muted); font-size: 13px; gap: 7px;
+      user-select: none;
+    }
+    .bucket-new:hover {
+      border-color: var(--accent1);
+      background: rgba(255,169,77,.05);
+      color: var(--accent1);
+    }
+
+    /* ── EMPTY STATE ─────────────────────────────── */
+    .empty-state {
+      grid-column: 1/-1; text-align: center;
+      padding: 70px 20px; color: var(--muted);
+    }
+    .empty-state h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.1rem, 3vw, 1.6rem);
+      margin-bottom: 8px; color: var(--text);
+    }
+
+    /* ── LINK BANNER ─────────────────────────────── */
+    #link-banner {
+      display: none; align-items: center; justify-content: center;
+      gap: 10px; padding: 8px var(--pad);
+      background: rgba(255,169,77,.07);
+      border-bottom: 1px solid rgba(255,169,77,.18);
+      font-size: 12.5px; color: var(--accent1);
+      flex-wrap: wrap; text-align: center;
+    }
+    #link-banner.visible { display: flex; }
+
+    /* ── MODAL ───────────────────────────────────── */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,.55);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999; backdrop-filter: blur(6px);
+      animation: fadeIn .15s; padding: 20px;
+    }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+    .modal {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: clamp(18px,4vw,28px);
+      width: 100%; max-width: 380px;
+      animation: slideUp .18s ease;
+    }
+    @keyframes slideUp {
+      from{transform:translateY(14px);opacity:0}
+      to{transform:translateY(0);opacity:1}
+    }
+
+    .modal h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(.95rem, 2.5vw, 1.1rem);
+      margin-bottom: 14px;
+    }
+
+    .modal input {
+      width: 100%; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 12px; font-family: 'DM Sans', sans-serif;
+      font-size: 14px; color: var(--text); outline: none;
+      margin-bottom: 16px; transition: border-color .15s;
+    }
+    .modal input:focus { border-color: var(--accent1); }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+    /* ── TOAST ───────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 20px; left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); padding: 8px 18px; border-radius: 20px;
+      font-size: 12.5px; opacity: 0; transition: all .22s;
+      pointer-events: none; z-index: 1000;
+      white-space: nowrap; max-width: 90vw;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    #toast.show { opacity:1; transform: translateX(-50%) translateY(0); }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (max-width: 640px) {
+      main { grid-template-columns: 1fr; }
+      .header-center { display: none; }
+      /* compact save indicator */
+      #save-dot-mobile { display: flex !important; }
+    }
+
+    @media (min-width: 641px) and (max-width: 900px) {
+      main { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    #save-dot-mobile {
+      display: none;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--muted); transition: background .3s;
+    }
+    #save-dot-mobile.linked { background: #34d399; }
+    #save-dot-mobile.saving { background: var(--accent1); animation: pulse 1s infinite; }
+    #save-dot-mobile.error  { background: var(--accent0); }
+  </style>
+</head>
+<body>
+
+<!-- Banner: offer to link JSON file (shown once) -->
+<div id="link-banner">
+  <span>💾 Quer salvar automaticamente em um arquivo JSON na sua pasta?</span>
+  <button class="btn btn-primary" id="btn-link-file" style="padding:5px 12px;font-size:12px">Vincular arquivo</button>
+  <button class="btn btn-ghost" id="btn-dismiss-banner" style="padding:5px 10px;font-size:12px">Agora não</button>
+</div>
+
+<header>
+  <h1>Task<span>board</span></h1>
+
+  <div class="header-center">
+    <div id="save-pill">
+      <span class="dot pulse"></span>
+      <span id="pill-label">Somente localStorage</span>
+    </div>
+    <button class="btn btn-ghost" id="btn-link-header"
+      style="padding:4px 10px;font-size:11.5px"
+      title="Vincular arquivo JSON para auto-save">📁 Vincular</button>
+  </div>
+
+  <div class="header-actions">
+    <div id="save-dot-mobile" title="Status do save"></div>
+    <button class="btn btn-ghost" id="btn-export" title="Exportar cópia JSON">↓ JSON</button>
+    <button class="btn btn-primary" id="btn-add-bucket">+ Bucket</button>
+  </div>
+</header>
+
+<main id="board"></main>
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  CONSTANTS & STATE
+// ══════════════════════════════════════════════════════════
+const LS_KEY      = 'taskboard_v2';
+const LS_BANNER   = 'taskboard_banner_ok';
+const ACCENTS     = [
+  'var(--accent1)','var(--accent0)','var(--accent2)',
+  'var(--accent3)','var(--accent4)','var(--accent5)',
+  'var(--accent6)','var(--accent7)'
+];
+
+let state      = lsLoad();
+let fileHandle = null;   // FileSystemFileHandle — lives in memory only
+let _saveTimer = null;   // debounce timer for text inputs
+let _writing   = false;  // prevents overlapping file writes
+
+// ══════════════════════════════════════════════════════════
+//  PERSISTENCE — localStorage (sync) + File (async/parallel)
+// ══════════════════════════════════════════════════════════
+function lsLoad() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || { buckets:[] }; }
+  catch { return { buckets:[] }; }
+}
+
+function lsWrite() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch {}
+}
+
+// Parallel non-blocking file write — never awaited on the call site
+async function fileWrite() {
+  if (!fileHandle || _writing) return;
+  _writing = true;
+  setPill('saving');
+  try {
+    const w = await fileHandle.createWritable();
+    await w.write(JSON.stringify(state, null, 2));
+    await w.close();
+    setPill('linked');
+  } catch(e) {
+    if (e.name !== 'AbortError') { setPill('error'); console.warn(e); }
+    else setPill('linked');
+  } finally {
+    _writing = false;
+  }
+}
+
+// Single entry-point for ALL saves
+function save() {
+  lsWrite();                            // instant — never blocks
+  if (fileHandle) {
+    // schedule on next event-loop tick so UI paint runs first
+    setTimeout(fileWrite, 0);
+  }
+}
+
+// Debounced version for text-input events
+function debounceSave(ms = 320) {
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(save, ms);
+}
+
+// ══════════════════════════════════════════════════════════
+//  FILE SYSTEM ACCESS API
+// ══════════════════════════════════════════════════════════
+async function pickAndLinkFile() {
+  if (!('showSaveFilePicker' in window)) {
+    toast('⚠️ Use Chrome ou Edge para ativar o auto-save em arquivo.');
+    return;
+  }
+  try {
+    const h = await window.showSaveFilePicker({
+      suggestedName: 'taskboard.json',
+      types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }]
+    });
+    fileHandle = h;
+    await fileWrite();          // escreve imediatamente
+    linkPill(h.name);
+    hideBanner();
+    toast(`📁 Vinculado: ${h.name} — auto-save ativo`);
+  } catch(e) {
+    if (e.name !== 'AbortError') console.warn(e);
+  }
+}
+
+// ── Pill UI ───────────────────────────────────────────────
+function setPill(state) {
+  const pill = document.getElementById('save-pill');
+  const dot  = document.getElementById('save-dot-mobile');
+  pill.className = dot.className = '';
+  if (state === 'linked') {
+    pill.classList.add('linked'); dot.classList.add('linked');
+  } else if (state === 'saving') {
+    pill.classList.add('saving'); dot.classList.add('saving');
+  } else if (state === 'error') {
+    pill.classList.add('error'); dot.classList.add('error');
+  }
+}
+
+function linkPill(name) {
+  document.getElementById('pill-label').textContent = `📁 ${name}`;
+  document.querySelector('#save-pill .dot').classList.remove('pulse');
+  setPill('linked');
+}
+
+// ── Banner ────────────────────────────────────────────────
+function maybeShowBanner() {
+  if (!('showSaveFilePicker' in window)) return;
+  if (localStorage.getItem(LS_BANNER)) return;
+  document.getElementById('link-banner').classList.add('visible');
+}
+function hideBanner() {
+  document.getElementById('link-banner').classList.remove('visible');
+  localStorage.setItem(LS_BANNER, '1');
+}
+
+// ══════════════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════════════
+const uid    = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const accent = i  => ACCENTS[i % ACCENTS.length];
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg, ms = 2500) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), ms);
+}
+
+const findTask         = id => { for(const b of state.buckets){ const t=b.tasks.find(t=>t.id===id); if(t) return t; } return null; };
+const findBucketByTask = id => state.buckets.find(b => b.tasks.some(t => t.id === id));
+
+// ══════════════════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════════════════
+function render() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+
+  if (!state.buckets.length) {
+    board.insertAdjacentHTML('beforeend', `
+      <div class="empty-state">
+        <h2>Nenhum bucket ainda</h2>
+        <p style="margin-top:6px">Crie um bucket para organizar tarefas por pessoa ou projeto.</p>
+      </div>
+    `);
+  }
+
+  state.buckets.forEach((bucket, bi) => {
+    const ac   = accent(bi);
+    const done = bucket.tasks.filter(t=>t.completed).length;
+    const tot  = bucket.tasks.length;
+    const pct  = tot ? Math.round(done/tot*100) : 0;
+
+    const card = document.createElement('div');
+    card.className = 'bucket';
+    card.style.setProperty('--accent-color', ac);
+    card.dataset.bucketId = bucket.id;
+
+    card.innerHTML = `
+      <div class="bucket-header">
+        <div class="bucket-title-wrap">
+          <input class="bucket-name" type="text"
+            value="${esc(bucket.name)}"
+            data-bucket-id="${bucket.id}"
+            spellcheck="false" title="Clique para renomear" />
+          <div class="bucket-meta">
+            <span class="bucket-count">${done}/${tot}</span>
+            <div class="bucket-progress">
+              <div class="bucket-progress-bar" style="width:${pct}%"></div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-icon danger delete-bucket"
+          data-bucket-id="${bucket.id}"
+          title="Excluir bucket" aria-label="Excluir bucket">✕</button>
+      </div>
+
+      <div class="task-list" id="tasks-${bucket.id}">
+        ${bucket.tasks.map(t => taskHTML(t)).join('')}
+      </div>
+
+      <div class="bucket-footer">
+        <div class="add-task-form">
+          <input class="add-task-input" type="text"
+            placeholder="Nova tarefa…"
+            data-bucket-id="${bucket.id}" />
+          <button class="btn-add-task"
+            data-bucket-id="${bucket.id}"
+            title="Adicionar tarefa" aria-label="Adicionar">+</button>
+        </div>
+      </div>
+    `;
+    board.appendChild(card);
+  });
+
+  // "New bucket" card
+  const nc = document.createElement('div');
+  nc.className = 'bucket-new';
+  nc.id = 'add-bucket-card';
+  nc.setAttribute('role','button'); nc.setAttribute('tabindex','0');
+  nc.innerHTML = '<span style="font-size:18px;line-height:1">+</span> Novo Bucket';
+  board.appendChild(nc);
+
+  wireBoard();
+}
+
+function taskHTML(t) {
+  return `
+    <div class="task-item${t.completed?' done':''}" data-task-id="${t.id}">
+      <div class="task-main">
+        <input type="checkbox" class="task-check"
+          ${t.completed?'checked':''} data-task-id="${t.id}" />
+        <input class="task-text" type="text"
+          value="${esc(t.title)}" data-task-id="${t.id}" spellcheck="false" />
+        <button class="btn-expand${t.expanded?' open':''}"
+          data-task-id="${t.id}"
+          title="${t.expanded?'Fechar':'Descrição'}" aria-label="Descrição">▾</button>
+        <button class="btn-icon danger delete-task"
+          data-task-id="${t.id}" title="Excluir" aria-label="Excluir tarefa">✕</button>
+      </div>
+      <div class="task-desc-wrap${t.expanded?' open':''}">
+        <textarea class="task-desc"
+          data-task-id="${t.id}"
+          placeholder="Adicione uma descrição…"
+          rows="3" spellcheck="false">${esc(t.description||'')}</textarea>
+      </div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════
+//  DOM MUTATIONS (without full re-render)
+// ══════════════════════════════════════════════════════════
+function refreshTask(task) {
+  const el = document.querySelector(`.task-item[data-task-id="${task.id}"]`);
+  if (!el) return;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = taskHTML(task);
+  el.replaceWith(tmp.firstElementChild);
+  refreshMeta(findBucketByTask(task.id));
+}
+
+function refreshMeta(bucket) {
+  if (!bucket) return;
+  const done = bucket.tasks.filter(t=>t.completed).length;
+  const tot  = bucket.tasks.length;
+  const pct  = tot ? Math.round(done/tot*100) : 0;
+  const card = document.querySelector(`.bucket[data-bucket-id="${bucket.id}"]`);
+  if (!card) return;
+  const cnt = card.querySelector('.bucket-count');
+  const bar = card.querySelector('.bucket-progress-bar');
+  if (cnt) cnt.textContent = `${done}/${tot}`;
+  if (bar) bar.style.width = `${pct}%`;
+}
+
+// ══════════════════════════════════════════════════════════
+//  EVENT WIRING (delegation on #board)
+// ══════════════════════════════════════════════════════════
+function wireBoard() {
+  const board = document.getElementById('board');
+  // Clone to remove any previous listeners after re-render
+  const b2 = board.cloneNode(true);
+  board.replaceWith(b2);
+  const b = document.getElementById('board');
+
+  b.addEventListener('click', e => {
+
+    const delBucket = e.target.closest('.delete-bucket');
+    if (delBucket) {
+      if (confirm('Excluir este bucket e todas as tarefas?')) {
+        state.buckets = state.buckets.filter(x => x.id !== delBucket.dataset.bucketId);
+        save(); render(); toast('Bucket excluído.');
+      }
+      return;
+    }
+
+    const chk = e.target.closest('.task-check');
+    if (chk) {
+      const t = findTask(chk.dataset.taskId);
+      if (t) { t.completed = chk.checked; save(); refreshTask(t); }
+      return;
+    }
+
+    const exp = e.target.closest('.btn-expand');
+    if (exp) {
+      const t = findTask(exp.dataset.taskId);
+      if (t) { t.expanded = !t.expanded; save(); refreshTask(t); }
+      return;
+    }
+
+    const del = e.target.closest('.delete-task');
+    if (del) {
+      const bucket = findBucketByTask(del.dataset.taskId);
+      if (bucket) {
+        bucket.tasks = bucket.tasks.filter(t => t.id !== del.dataset.taskId);
+        save();
+        document.querySelector(`.task-item[data-task-id="${del.dataset.taskId}"]`)?.remove();
+        refreshMeta(bucket);
+      }
+      return;
+    }
+
+    const addBtn = e.target.closest('.btn-add-task');
+    if (addBtn) {
+      const inp = document.querySelector(`.add-task-input[data-bucket-id="${addBtn.dataset.bucketId}"]`);
+      commitTask(addBtn.dataset.bucketId, inp);
+      return;
+    }
+
+    if (e.target.closest('#add-bucket-card')) { openModal(); return; }
+  });
+
+  b.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.target.classList.contains('add-task-input')) {
+      e.preventDefault();
+      commitTask(e.target.dataset.bucketId, e.target);
+    }
+    if (e.key === 'Enter' && e.target.id === 'add-bucket-card') openModal();
+  });
+
+  b.addEventListener('input', e => {
+    const tid = e.target.dataset.taskId;
+    const bid = e.target.dataset.bucketId;
+    if (e.target.classList.contains('task-desc')) {
+      const t = findTask(tid); if(t) t.description = e.target.value;
+    } else if (e.target.classList.contains('task-text')) {
+      const t = findTask(tid); if(t) t.title = e.target.value;
+    } else if (e.target.classList.contains('bucket-name')) {
+      const bk = state.buckets.find(x=>x.id===bid); if(bk) bk.name = e.target.value;
+    }
+    debounceSave();
+  });
+
+  b.addEventListener('blur', e => {
+    if (e.target.classList.contains('task-text')) {
+      const t = findTask(e.target.dataset.taskId);
+      if (t && !e.target.value.trim()) e.target.value = t.title;
+    }
+    if (e.target.classList.contains('bucket-name')) {
+      const bk = state.buckets.find(x=>x.id===e.target.dataset.bucketId);
+      if (bk && !e.target.value.trim()) e.target.value = bk.name;
+    }
+  }, true);
+}
+
+function commitTask(bucketId, input) {
+  const title = input.value.trim();
+  if (!title) return;
+  const bucket = state.buckets.find(b=>b.id===bucketId);
+  if (!bucket) return;
+
+  const task = { id: uid(), title, description: '', completed: false, expanded: false };
+  bucket.tasks.push(task);
+  save();
+
+  const list = document.getElementById(`tasks-${bucketId}`);
+  list.insertAdjacentHTML('beforeend', taskHTML(task));
+  refreshMeta(bucket);
+  input.value = '';
+  list.scrollTop = list.scrollHeight;
+}
+
+// ══════════════════════════════════════════════════════════
+//  NEW BUCKET MODAL
+// ══════════════════════════════════════════════════════════
+function openModal() {
+  const bd = document.createElement('div');
+  bd.className = 'modal-backdrop';
+  bd.innerHTML = `
+    <div class="modal" role="dialog" aria-modal="true">
+      <h2>Novo Bucket</h2>
+      <input id="modal-name" type="text"
+        placeholder="Nome (ex: João, Projeto Alpha…)"
+        autocomplete="off" />
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="modal-cancel">Cancelar</button>
+        <button class="btn btn-primary" id="modal-ok">Criar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(bd);
+  const inp = document.getElementById('modal-name');
+  requestAnimationFrame(() => inp.focus());
+
+  const go = () => {
+    const name = inp.value.trim();
+    if (!name) { inp.focus(); return; }
+    state.buckets.push({ id: uid(), name, tasks: [] });
+    save(); render(); bd.remove();
+    toast(`Bucket "${name}" criado.`);
+  };
+
+  document.getElementById('modal-ok').addEventListener('click', go);
+  document.getElementById('modal-cancel').addEventListener('click', () => bd.remove());
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') go();
+    if (e.key === 'Escape') bd.remove();
+  });
+  bd.addEventListener('click', e => { if (e.target === bd) bd.remove(); });
+}
+
+// ══════════════════════════════════════════════════════════
+//  HEADER BUTTONS
+// ══════════════════════════════════════════════════════════
+document.getElementById('btn-add-bucket').addEventListener('click', openModal);
+document.getElementById('btn-link-header').addEventListener('click', pickAndLinkFile);
+document.getElementById('btn-link-file').addEventListener('click', pickAndLinkFile);
+document.getElementById('btn-dismiss-banner').addEventListener('click', hideBanner);
+
+document.getElementById('btn-export').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `taskboard_${new Date().toISOString().slice(0,10)}.json`;
+  a.click(); URL.revokeObjectURL(a.href);
+  toast('Cópia exportada!');
+});
+
+// ══════════════════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════════════════
+render();
+maybeShowBanner();
+</script>
+</body>
+</html>
