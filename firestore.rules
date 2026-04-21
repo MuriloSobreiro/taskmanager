@@ -1,16 +1,4 @@
 // firestore.rules
-// Plano Spark compatível — sem Cloud Functions
-//
-// Como a segurança funciona sem custom claims:
-//   Cada operação de leitura/escrita consulta /users/{uid} via get()
-//   para verificar os campos "approved" e "admin" server-side.
-//   O front-end não tem como falsificar esses campos — a regra
-//   é avaliada pelo Firestore, não pelo browser.
-//
-// Trade-off: cada operação em /buckets consome 1 Firestore read extra
-// para o get() do usuário. No plano Spark (50k reads/dia) isso é
-// suficiente para equipes pequenas e médias.
-//
 // Deploy: firebase deploy --only firestore:rules
 
 rules_version = '2';
@@ -18,34 +6,31 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // ── Helpers ──────────────────────────────────────────────
+
     function isSignedIn() {
       return request.auth != null;
     }
 
-    // Lê o documento do usuário para obter approved/admin.
-    // O resultado é cacheado dentro da mesma avaliação de regra.
+    // Lê /users/{uid} server-side para verificar approved/admin.
+    // Cacheado dentro da mesma avaliação de regra.
     function userData(uid) {
       return get(/databases/$(database)/documents/users/$(uid)).data;
     }
 
-    // Usuário autenticado + campo approved == true no Firestore
     function isApproved() {
       return isSignedIn()
           && userData(request.auth.uid).get('approved', false) == true;
     }
 
-    // Usuário autenticado + campo admin == true no Firestore
     function isAdmin() {
       return isSignedIn()
           && userData(request.auth.uid).get('admin', false) == true;
     }
 
-    // Aprovado E dono do path
     function isOwner(uid) {
       return isApproved() && request.auth.uid == uid;
     }
 
-    // Valida estrutura de um bucket (evita writes malformados)
     function validBucket() {
       let d = request.resource.data;
       return d.keys().hasAll(['name', 'accentIndex', 'tasks', 'createdAt'])
@@ -62,51 +47,48 @@ service cloud.firestore {
     // ── /users/{uid} ─────────────────────────────────────────
     match /users/{uid} {
 
-      // Usuário lê o próprio doc (para checar approved/admin no boot)
-      // ou admin lê doc de qualquer usuário
+      // Lê o próprio perfil (durante o boot para verificar approved/admin)
+      // ou admin lê qualquer perfil
       allow read: if request.auth.uid == uid || isAdmin();
 
-      // Criação do próprio perfil durante o signup:
-      // começa como não-aprovado e não-admin — o app não pode criar admin diretamente
+      // Criação durante o signup:
+      // O app cria o documento com approved=false e admin=false.
+      // Qualquer usuário autenticado pode criar o próprio documento
+      // desde que comece com approved=false e admin=false.
       allow create: if request.auth.uid == uid
-          && request.resource.data.keys().hasAll(['approved', 'admin', 'createdAt'])
-          && request.resource.data.approved == false
-          && request.resource.data.admin    == false;
+          && request.resource.data.get('approved', false) == false
+          && request.resource.data.get('admin',    false) == false;
 
-      // O usuário pode atualizar o próprio doc com duas condições:
-      //   a) campo "admin" não pode ser alterado pelo próprio usuário
-      //   b) para setar approved=true, o código de convite deve ter sido
-      //      realmente consumido por este uid (verificação cross-doc via get())
+      // Atualização do próprio documento (dois casos):
       allow update: if request.auth.uid == uid
-          // Nunca auto-promover para admin
+          // 1. Jamais permite auto-promoção para admin
           && request.resource.data.get('admin', false)
              == resource.data.get('admin', false)
           && (
-            // Nenhuma mudança em approved → atualização normal de outros campos
-            request.resource.data.approved == resource.data.approved
-            ||
-            // Setando approved=true pela primeira vez: valida o código
-            (
-              request.resource.data.approved == true
-              && resource.data.approved      == false
-              && request.resource.data.keys().hasAll(['inviteCode'])
-              // O código referenciado deve ter sido marcado como usado por este uid
-              && get(/databases/$(database)/documents/inviteCodes/$(request.resource.data.inviteCode))
-                   .data.usedBy == uid
-              && get(/databases/$(database)/documents/inviteCodes/$(request.resource.data.inviteCode))
-                   .data.used   == true
-            )
+              // Caso A: não está mudando "approved" — atualização normal
+              request.resource.data.approved == resource.data.approved
+              ||
+              // Caso B: setando approved=true pela primeira vez
+              // Valida que o código de convite foi de fato consumido por este uid
+              (
+                request.resource.data.approved == true
+                && resource.data.approved       == false
+                && request.resource.data.keys().hasAll(['inviteCode'])
+                && get(/databases/$(database)/documents/inviteCodes/$(request.resource.data.inviteCode))
+                     .data.usedBy == uid
+                && get(/databases/$(database)/documents/inviteCodes/$(request.resource.data.inviteCode))
+                     .data.used   == true
+              )
           );
 
-      // Um admin pode promover/rebaixar outro usuário (mas não a si mesmo)
-      // Apenas os campos de promoção podem ser tocados nessa operação
+      // Admin promove outro usuário (não a si mesmo)
+      // Apenas os campos de promoção podem ser alterados nesta operação
       allow update: if isAdmin()
           && request.auth.uid != uid
           && request.resource.data.diff(resource.data)
                .affectedKeys()
                .hasOnly(['admin', 'promotedBy', 'promotedAt']);
 
-      // Ninguém exclui o próprio perfil pelo app
       allow delete: if false;
 
       // ── /users/{uid}/buckets/{bucketId} ────────────────────
@@ -121,20 +103,21 @@ service cloud.firestore {
     // ── /inviteCodes/{code} ──────────────────────────────────
     match /inviteCodes/{code} {
 
-      // Qualquer usuário autenticado pode GET um código específico pelo ID
-      // (necessário para validar antes de reivindicar)
-      // Ninguém pode LISTAR (sem list access, enumerar é inviável)
+      // Qualquer autenticado pode GET um código pelo ID exato
+      // (necessário durante a transação do signup)
+      // Ninguém sem ser admin pode LISTAR
       allow get:  if isSignedIn();
       allow list: if isAdmin();
 
-      // Apenas admins criam novos códigos (direto do painel, sem Functions)
+      // Apenas admins criam novos códigos
       allow create: if isAdmin()
           && request.resource.data.used == false
           && request.resource.data.keys().hasAll(['used', 'createdBy', 'createdAt', 'expiresAt']);
 
-      // Qualquer usuário autenticado pode "reivindicar" um código não-usado
-      // Só pode marcar como used=true, e usedBy deve ser o próprio uid
-      // Apenas os 3 campos de consumo podem ser alterados
+      // Qualquer autenticado pode "consumir" um código não-usado:
+      // — só pode marcar used=true
+      // — usedBy deve ser o próprio uid
+      // — apenas os campos de consumo podem ser alterados
       allow update: if isSignedIn()
           && resource.data.used               == false
           && request.resource.data.used       == true
@@ -143,7 +126,7 @@ service cloud.firestore {
                .affectedKeys()
                .hasOnly(['used', 'usedBy', 'usedAt']);
 
-      // Admins podem excluir códigos (ex: expirados, não utilizados)
+      // Admins podem revogar (deletar) códigos não utilizados
       allow delete: if isAdmin();
     }
 

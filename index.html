@@ -15,15 +15,10 @@
       href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <!-- Firebase SDK — sem Functions, plano Spark compatível -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
     <style>
-      /* ════════════════════════════════════════════
-       TOKENS & RESET
-    ════════════════════════════════════════════ */
       *,
       *::before,
       *::after {
@@ -68,8 +63,6 @@
         line-height: 1.5;
         min-height: 100svh;
       }
-
-      /* views */
       .view {
         display: none;
       }
@@ -77,9 +70,7 @@
         display: flex;
       }
 
-      /* ════════════════════════════════════════════
-       AUTH
-    ════════════════════════════════════════════ */
+      /* ── AUTH ─────────────────────────────────── */
       #view-auth {
         min-height: 100svh;
         align-items: center;
@@ -190,6 +181,55 @@
         display: block;
       }
 
+      /* Signup steps indicator */
+      .signup-steps {
+        display: none;
+        margin-top: 16px;
+      }
+      .signup-steps.visible {
+        display: block;
+      }
+      .step-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 0;
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      .step-item.active {
+        color: var(--accent1);
+      }
+      .step-item.done {
+        color: var(--accent5);
+      }
+      .step-item.failed {
+        color: var(--accent0);
+      }
+      .step-dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 1.5px solid currentColor;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        flex-shrink: 0;
+      }
+      .step-item.active .step-dot {
+        border-color: var(--accent1);
+        animation: spin 0.8s linear infinite;
+      }
+      .step-item.done .step-dot {
+        background: var(--accent5);
+        border-color: var(--accent5);
+      }
+      .step-item.failed .step-dot {
+        background: var(--accent0);
+        border-color: var(--accent0);
+      }
+
       .auth-submit {
         width: 100%;
         background: var(--accent1);
@@ -217,7 +257,7 @@
         opacity: 0.5;
         cursor: not-allowed;
       }
-      .auth-submit .spinner {
+      .auth-submit .btn-spinner {
         display: none;
         width: 16px;
         height: 16px;
@@ -227,7 +267,7 @@
         border-radius: 50%;
         animation: spin 0.6s linear infinite;
       }
-      .auth-submit.loading .spinner {
+      .auth-submit.loading .btn-spinner {
         display: block;
       }
 
@@ -237,9 +277,7 @@
         }
       }
 
-      /* ════════════════════════════════════════════
-       APP HEADER
-    ════════════════════════════════════════════ */
+      /* ── HEADER ─────────────────────────────────── */
       #view-app {
         flex-direction: column;
         min-height: 100svh;
@@ -319,11 +357,12 @@
         flex: 1;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         justify-content: center;
         min-width: 0;
       }
 
+      /* Save pill */
       #save-pill {
         display: inline-flex;
         align-items: center;
@@ -337,7 +376,6 @@
         transition:
           border-color 0.3s,
           color 0.3s;
-        flex-shrink: 0;
       }
       #save-pill.synced {
         border-color: #34d399;
@@ -354,6 +392,85 @@
       #save-pill.offline {
         border-color: var(--muted);
         color: var(--muted);
+      }
+
+      /* Sync delay settings popover */
+      .sync-settings-wrap {
+        position: relative;
+      }
+
+      #btn-sync-settings {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        border-radius: 8px;
+        padding: 4px 8px;
+        font-size: 11.5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition:
+          color 0.15s,
+          border-color 0.15s;
+        font-family: 'DM Mono', monospace;
+        white-space: nowrap;
+      }
+      #btn-sync-settings:hover {
+        color: var(--text);
+        border-color: #555;
+      }
+
+      .sync-popover {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        width: 220px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        z-index: 200;
+        display: none;
+        animation: slideUp 0.15s ease;
+      }
+      .sync-popover.open {
+        display: block;
+      }
+      .sync-popover-title {
+        font-size: 11.5px;
+        font-weight: 500;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 10px;
+      }
+
+      .delay-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .delay-btn {
+        padding: 5px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--surface2);
+        color: var(--muted);
+        font-size: 12px;
+        font-family: 'DM Mono', monospace;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .delay-btn:hover {
+        border-color: var(--accent2);
+        color: var(--text);
+      }
+      .delay-btn.active {
+        background: rgba(78, 205, 196, 0.15);
+        border-color: var(--accent2);
+        color: var(--accent2);
       }
 
       .dot {
@@ -408,9 +525,7 @@
         flex-shrink: 0;
       }
 
-      /* ════════════════════════════════════════════
-       BUTTONS
-    ════════════════════════════════════════════ */
+      /* ── BUTTONS ─────────────────────────────────── */
       .btn {
         display: inline-flex;
         align-items: center;
@@ -482,9 +597,7 @@
         background: rgba(255, 107, 107, 0.12);
       }
 
-      /* ════════════════════════════════════════════
-       BOARD PANEL
-    ════════════════════════════════════════════ */
+      /* ── BOARD ───────────────────────────────────── */
       #panel-board {
         flex: 1;
         display: none;
@@ -699,7 +812,6 @@
         max-height: 200px;
         opacity: 1;
       }
-
       .task-desc {
         margin: 2px 5px 8px 28px;
         padding: 8px 10px;
@@ -809,15 +921,13 @@
         color: var(--text);
       }
 
-      /* ════════════════════════════════════════════
-       ADMIN PANEL
-    ════════════════════════════════════════════ */
+      /* ── ADMIN PANEL ─────────────────────────────── */
       #panel-admin {
         flex: 1;
         display: none;
         flex-direction: column;
         padding: clamp(20px, 3vw, 40px) var(--pad) 60px;
-        max-width: 860px;
+        max-width: 900px;
         width: 100%;
         margin: 0 auto;
       }
@@ -920,7 +1030,6 @@
         text-transform: uppercase;
         letter-spacing: 0.03em;
       }
-
       .form-select,
       .form-input-num {
         background: var(--surface2);
@@ -935,14 +1044,12 @@
         cursor: pointer;
         -webkit-appearance: none;
         appearance: none;
+      }
+      .form-select {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath stroke='%236b6b75' stroke-width='1.5' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 10px center;
         padding-right: 30px;
-      }
-      .form-input-num {
-        background-image: none;
-        padding-right: 12px;
       }
       .form-select:focus,
       .form-input-num:focus {
@@ -989,6 +1096,7 @@
         display: none;
       }
 
+      /* Generated codes */
       #codes-output {
         display: none;
         margin-top: 20px;
@@ -1017,7 +1125,6 @@
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 8px;
       }
-
       .code-chip {
         display: flex;
         align-items: center;
@@ -1064,7 +1171,80 @@
         background: var(--border);
       }
 
-      /* Promote user section */
+      /* Active codes list */
+      .section-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .section-toolbar-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .codes-table-wrap {
+        overflow-x: auto;
+      }
+      .codes-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      .codes-table th {
+        text-align: left;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0 10px 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      .codes-table td {
+        padding: 10px 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        font-family: 'DM Mono', monospace;
+        font-size: 12.5px;
+        color: var(--muted);
+        vertical-align: middle;
+      }
+      .codes-table tr:last-child td {
+        border-bottom: none;
+      }
+      .codes-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .code-val {
+        color: var(--text);
+        letter-spacing: 0.05em;
+      }
+      .code-expiry {
+        font-size: 11.5px;
+      }
+      .code-expiry.soon {
+        color: var(--accent0);
+      }
+      .code-expiry.ok {
+        color: var(--accent5);
+      }
+      .code-actions {
+        display: flex;
+        gap: 4px;
+      }
+      .empty-codes {
+        text-align: center;
+        padding: 28px;
+        color: var(--muted);
+        font-size: 13px;
+        font-family: 'DM Sans', sans-serif;
+      }
+
+      /* Promote form */
       .promote-form {
         display: flex;
         gap: 10px;
@@ -1094,31 +1274,7 @@
         color: #3a3a42;
       }
 
-      .admin-note {
-        background: rgba(167, 139, 250, 0.06);
-        border: 1px solid rgba(167, 139, 250, 0.2);
-        border-radius: 10px;
-        padding: 14px 16px;
-        font-size: 12.5px;
-        color: var(--muted);
-        line-height: 1.6;
-      }
-      .admin-note strong {
-        color: var(--admin);
-      }
-      .admin-note code {
-        background: var(--surface2);
-        border: 1px solid var(--border);
-        border-radius: 4px;
-        padding: 1px 5px;
-        font-size: 11.5px;
-        font-family: 'DM Mono', monospace;
-        color: var(--text);
-      }
-
-      /* ════════════════════════════════════════════
-       LOADING
-    ════════════════════════════════════════════ */
+      /* ── LOADING ─────────────────────────────────── */
       #view-loading {
         min-height: 100svh;
         align-items: center;
@@ -1140,9 +1296,7 @@
         font-family: 'DM Mono', monospace;
       }
 
-      /* ════════════════════════════════════════════
-       MODAL
-    ════════════════════════════════════════════ */
+      /* ── MODAL ───────────────────────────────────── */
       .modal-backdrop {
         position: fixed;
         inset: 0;
@@ -1209,9 +1363,7 @@
         justify-content: flex-end;
       }
 
-      /* ════════════════════════════════════════════
-       TOAST
-    ════════════════════════════════════════════ */
+      /* ── TOAST ───────────────────────────────────── */
       #toast {
         position: fixed;
         bottom: 20px;
@@ -1235,9 +1387,7 @@
         transform: translateX(-50%) translateY(0);
       }
 
-      /* ════════════════════════════════════════════
-       RESPONSIVE
-    ════════════════════════════════════════════ */
+      /* ── RESPONSIVE ──────────────────────────────── */
       @media (max-width: 640px) {
         main {
           grid-template-columns: 1fr;
@@ -1270,7 +1420,7 @@
     </style>
   </head>
   <body>
-    <!-- ══ LOADING ══════════════════════════════════════════ -->
+    <!-- LOADING -->
     <div
       id="view-loading"
       class="view active"
@@ -1279,7 +1429,7 @@
       <span class="loading-label">Verificando autenticação…</span>
     </div>
 
-    <!-- ══ AUTH ═════════════════════════════════════════════ -->
+    <!-- AUTH -->
     <div
       id="view-auth"
       class="view"
@@ -1358,12 +1508,37 @@
           onclick="submitAuth()"
         >
           <span id="auth-btn-label">Entrar</span>
-          <span class="spinner"></span>
+          <span class="btn-spinner"></span>
         </button>
+
+        <!-- Signup progress steps (visível apenas durante cadastro) -->
+        <div
+          class="signup-steps"
+          id="signup-steps"
+        >
+          <div
+            class="step-item"
+            id="step-1"
+          >
+            <span class="step-dot">1</span> Criando conta…
+          </div>
+          <div
+            class="step-item"
+            id="step-2"
+          >
+            <span class="step-dot">2</span> Validando código de convite…
+          </div>
+          <div
+            class="step-item"
+            id="step-3"
+          >
+            <span class="step-dot">3</span> Ativando acesso…
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ══ APP ══════════════════════════════════════════════ -->
+    <!-- APP -->
     <div
       id="view-app"
       class="view"
@@ -1392,9 +1567,74 @@
               🛡️ Admin
             </button>
           </nav>
+
           <div id="save-pill">
             <span class="dot pulse"></span>
             <span id="pill-label">Conectando…</span>
+          </div>
+
+          <!-- Sync delay control -->
+          <div class="sync-settings-wrap">
+            <button
+              id="btn-sync-settings"
+              onclick="toggleSyncPopover()"
+              title="Delay de sincronização"
+            >
+              ⏱ <span id="delay-label">3s</span>
+            </button>
+            <div
+              class="sync-popover"
+              id="sync-popover"
+            >
+              <div class="sync-popover-title">Delay de sync após edição</div>
+              <div
+                class="delay-options"
+                id="delay-options"
+              >
+                <button
+                  class="delay-btn"
+                  data-ms="500"
+                  onclick="setDelay(500)"
+                >
+                  0.5s
+                </button>
+                <button
+                  class="delay-btn"
+                  data-ms="1000"
+                  onclick="setDelay(1000)"
+                >
+                  1s
+                </button>
+                <button
+                  class="delay-btn"
+                  data-ms="2000"
+                  onclick="setDelay(2000)"
+                >
+                  2s
+                </button>
+                <button
+                  class="delay-btn active"
+                  data-ms="3000"
+                  onclick="setDelay(3000)"
+                >
+                  3s
+                </button>
+                <button
+                  class="delay-btn"
+                  data-ms="5000"
+                  onclick="setDelay(5000)"
+                >
+                  5s
+                </button>
+                <button
+                  class="delay-btn"
+                  data-ms="10000"
+                  onclick="setDelay(10000)"
+                >
+                  10s
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1410,7 +1650,7 @@
               id="user-email-label"
               style="
                 font-size: 12px;
-                max-width: 100px;
+                max-width: 110px;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -1434,7 +1674,7 @@
         </div>
       </header>
 
-      <!-- Board -->
+      <!-- Board panel -->
       <div
         id="panel-board"
         class="active"
@@ -1442,7 +1682,7 @@
         <main id="board"></main>
       </div>
 
-      <!-- Admin -->
+      <!-- Admin panel -->
       <div id="panel-admin">
         <div class="admin-header">
           <h2
@@ -1460,9 +1700,7 @@
         <!-- Stats -->
         <div class="admin-section">
           <div class="admin-section-title">Resumo de convites</div>
-          <div class="admin-section-sub">
-            Códigos gerados para este projeto.
-          </div>
+          <div class="admin-section-sub">Visão geral dos códigos gerados.</div>
           <div class="stats-grid">
             <div class="stat-card">
               <div
@@ -1494,14 +1732,13 @@
           </div>
         </div>
 
-        <!-- Generate -->
+        <!-- Gerar -->
         <div class="admin-section">
           <div class="admin-section-title">Gerar novos códigos</div>
           <div class="admin-section-sub">
             Cada código é de uso único. Distribua individualmente para cada
-            pessoa.
+            pessoa convidada.
           </div>
-
           <div class="generate-form">
             <div class="form-field">
               <label class="form-label">Quantidade</label>
@@ -1541,13 +1778,12 @@
               <span class="btn-label">✦ Gerar</span>
             </button>
           </div>
-
           <div id="codes-output">
             <div class="codes-toolbar">
-              <span class="codes-toolbar-label">
-                <strong id="codes-count">0</strong> códigos — válidos por
-                <strong id="codes-ttl">?</strong> dias
-              </span>
+              <span class="codes-toolbar-label"
+                ><strong id="codes-count">0</strong> códigos — válidos por
+                <strong id="codes-ttl">?</strong> dias</span
+              >
               <button
                 class="btn btn-ghost"
                 onclick="copyAllCodes()"
@@ -1563,13 +1799,41 @@
           </div>
         </div>
 
-        <!-- Promote -->
+        <!-- Códigos ativos -->
+        <div class="admin-section">
+          <div class="section-toolbar">
+            <div class="section-toolbar-title">Códigos ativos</div>
+            <button
+              class="btn btn-ghost"
+              id="btn-refresh-codes"
+              onclick="loadActiveCodes()"
+              style="padding: 5px 12px; font-size: 12px"
+            >
+              ↻ Atualizar
+            </button>
+          </div>
+          <p
+            style="
+              font-size: 12.5px;
+              color: var(--muted);
+              margin-bottom: 16px;
+              line-height: 1.5;
+            "
+          >
+            Todos os códigos não utilizados e ainda válidos. Use para confirmar
+            quais convites já foram distribuídos.
+          </p>
+          <div id="active-codes-wrap">
+            <div class="empty-codes">Carregando…</div>
+          </div>
+        </div>
+
+        <!-- Promover -->
         <div class="admin-section">
           <div class="admin-section-title">Promover usuário a Admin</div>
           <div class="admin-section-sub">
-            Cole o UID do usuário (disponível no Firebase Console →
-            Authentication → Users). O usuário precisará fazer logout e login
-            novamente para ver a aba Admin.
+            Cole o UID do usuário (Firebase Console → Authentication → Users). O
+            usuário precisará fazer logout e login novamente.
           </div>
           <div class="promote-form">
             <div class="form-field">
@@ -1592,22 +1856,10 @@
             </button>
           </div>
         </div>
-
-        <!-- Note -->
-        <div class="admin-section">
-          <div class="admin-section-title">Como funciona a segurança</div>
-          <p class="admin-note">
-            Este app opera <strong>sem Cloud Functions</strong> (plano Spark). A
-            autorização é garantida pelas
-            <strong>Firestore Security Rules</strong>: cada operação verifica o
-            documento <code>/users/{uid}</code> no servidor antes de executar. O
-            campo <code>admin: true</code> só pode ser alterado por outro
-            administrador. Nenhuma lógica de segurança existe somente no
-            front-end.
-          </p>
-        </div>
       </div>
+      <!-- /panel-admin -->
     </div>
+    <!-- /view-app -->
 
     <div id="toast"></div>
 
@@ -1616,7 +1868,6 @@
 
       // ══════════════════════════════════════════════════════
       // 1. CONFIG  ← substitua pelos valores do seu projeto
-      //    Console: https://console.firebase.google.com
       // ══════════════════════════════════════════════════════
       const FIREBASE_CONFIG = {
         apiKey: 'AIzaSyAOBpr5EOcKaSUk0gQmdahDe3gjetz1LDE',
@@ -1632,7 +1883,6 @@
       const auth = firebase.auth();
       const db = firebase.firestore();
 
-      // Cache de leituras para o painel admin offline-first
       db.enablePersistence({ synchronizeTabs: true }).catch((e) => {
         if (e.code !== 'failed-precondition' && e.code !== 'unimplemented')
           console.warn(e);
@@ -1641,13 +1891,43 @@
       // ══════════════════════════════════════════════════════
       // 2. STATE
       // ══════════════════════════════════════════════════════
-      let currentUser = null; // firebase.User
-      let currentUserData = {}; // { approved, admin, ... } do Firestore
+      let currentUser = null;
       let isAdmin = false;
       let authMode = 'login';
       let _unsubDB = null;
       let _lastCodes = [];
       let _lastTTL = 30;
+
+      // ─── Sync delay ───────────────────────────────────────
+      // Default: 3000ms. Persiste em localStorage por preferência do usuário.
+      const LS_DELAY = 'taskboard_sync_delay';
+      let SYNC_DELAY_MS = parseInt(localStorage.getItem(LS_DELAY)) || 3000;
+
+      function setDelay(ms) {
+        SYNC_DELAY_MS = ms;
+        localStorage.setItem(LS_DELAY, ms);
+        document.getElementById('delay-label').textContent =
+          ms >= 1000 ? `${ms / 1000}s` : `${ms}ms`;
+        document.querySelectorAll('.delay-btn').forEach((b) => {
+          b.classList.toggle('active', parseInt(b.dataset.ms) === ms);
+        });
+        closeSyncPopover();
+        toast(
+          `⏱ Sync após ${ms >= 1000 ? ms / 1000 + 's' : ms + 'ms'} de inatividade`,
+        );
+      }
+
+      function toggleSyncPopover() {
+        document.getElementById('sync-popover').classList.toggle('open');
+      }
+      function closeSyncPopover() {
+        document.getElementById('sync-popover').classList.remove('open');
+      }
+
+      // Fecha popover ao clicar fora
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.sync-settings-wrap')) closeSyncPopover();
+      });
 
       const state = { buckets: [] };
       const ACCENTS = [
@@ -1663,7 +1943,16 @@
 
       // ══════════════════════════════════════════════════════
       // 3. AUTH
+      //
+      // CORREÇÃO DO BUG CRÍTICO:
+      // O onAuthStateChanged dispara imediatamente ao criar a conta
+      // (antes dos passos 2-4 do signup concluírem). A flag _signingUp
+      // suprime essa verificação durante todo o fluxo de cadastro.
+      // Ao finalizar o signup com sucesso, onAuthenticated() é chamada
+      // manualmente com o usuário já completamente configurado.
       // ══════════════════════════════════════════════════════
+      let _signingUp = false; // ← flag que protege o signup do onAuthStateChanged
+
       function switchAuthTab(tab) {
         authMode = tab;
         document
@@ -1680,6 +1969,7 @@
           tab === 'login'
             ? 'Acesse sua conta para continuar.'
             : 'Crie sua conta com o código de convite.';
+        document.getElementById('signup-steps').classList.remove('visible');
         clearAuthErr();
       }
 
@@ -1696,6 +1986,15 @@
       }
       function clearAuthErr() {
         document.getElementById('auth-error').classList.remove('visible');
+      }
+
+      function setStep(n, state) {
+        // state: 'active' | 'done' | 'failed' | ''
+        const el = document.getElementById(`step-${n}`);
+        if (!el) return;
+        el.className = `step-item ${state}`;
+        const dot = el.querySelector('.step-dot');
+        dot.textContent = state === 'done' ? '✓' : state === 'failed' ? '✕' : n;
       }
 
       function friendlyErr(code) {
@@ -1722,7 +2021,8 @@
         const invite = document
           .getElementById('auth-invite')
           .value.trim()
-          .toUpperCase();
+          .toUpperCase()
+          .replace(/\s/g, '');
 
         if (!email || !pwd) {
           showAuthErr('Preencha e-mail e senha.');
@@ -1737,66 +2037,100 @@
 
         try {
           if (authMode === 'login') {
+            // ─── LOGIN ─────────────────────────────────────────────
+            // onAuthStateChanged vai processar o resultado
             await auth.signInWithEmailAndPassword(email, pwd);
-            // onAuthStateChanged cuida do resto
           } else {
-            // ── SIGNUP ────────────────────────────────────────
-            // Passo 1: criar conta no Firebase Auth
-            const cred = await auth.createUserWithEmailAndPassword(email, pwd);
-            const uid = cred.user.uid;
+            // ─── SIGNUP ────────────────────────────────────────────
+            //
+            // IMPORTANTE: _signingUp = true ANTES de createUserWithEmailAndPassword.
+            // O onAuthStateChanged dispara assim que a conta é criada.
+            // Sem essa flag, ele leria approved:false e faria logout imediato,
+            // interrompendo os passos seguintes e gerando o erro relatado.
+            //
+            _signingUp = true;
+            document.getElementById('signup-steps').classList.add('visible');
+
+            let firebaseUser = null;
 
             try {
-              // Passo 2: criar documento do usuário (não aprovado ainda)
+              // Passo 1 — criar conta no Firebase Auth
+              setStep(1, 'active');
+              const cred = await auth.createUserWithEmailAndPassword(
+                email,
+                pwd,
+              );
+              firebaseUser = cred.user;
+              const uid = firebaseUser.uid;
+              setStep(1, 'done');
+
+              // Passo 2 — consumir o código de convite
+              // A transação garante atomicidade: nenhum outro signup pode usar o mesmo código
+              setStep(2, 'active');
               await db.collection('users').doc(uid).set({
                 approved: false,
                 admin: false,
-                email: email,
+                email,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
               });
-
-              // Passo 3: reivindicar o código de convite via transação client-side
-              // A Security Rule valida server-side que o código existe e não foi usado
               await claimInviteCode(invite, uid);
+              setStep(2, 'done');
 
-              // Passo 4: marcar usuário como aprovado
-              // A Security Rule valida que o código foi de fato resgatado por este uid
+              // Passo 3 — marcar usuário como aprovado
+              // A Security Rule valida server-side que o código foi consumido por este uid
+              setStep(3, 'active');
               await db.collection('users').doc(uid).update({
                 approved: true,
                 inviteCode: invite,
                 approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
               });
+              setStep(3, 'done');
+
+              // Signup concluído com sucesso — desativa a flag e inicia o app
+              _signingUp = false;
+              await onAuthenticated(firebaseUser);
             } catch (innerErr) {
-              // Rollback: remove a conta do Auth para não deixar conta "zumbi"
-              try {
-                await cred.user.delete();
-              } catch {}
+              // Rollback: se qualquer passo falhar, remove a conta do Auth
+              // para não deixar conta zumbi (autenticada mas sem dados completos)
+              _signingUp = false;
+              if (firebaseUser) {
+                const failedStep = document.querySelector('.step-item.active');
+                if (failedStep) failedStep.className = 'step-item failed';
+                try {
+                  await firebaseUser.delete();
+                } catch {}
+              }
               setAuthBusy(false);
               showAuthErr(
-                innerErr.message ||
-                  'Código inválido, expirado ou já utilizado.',
+                innerErr.message || 'Erro ao criar conta. Tente novamente.',
               );
               return;
             }
-            // onAuthStateChanged vai fazer o resto
           }
         } catch (err) {
+          _signingUp = false;
           setAuthBusy(false);
           showAuthErr(friendlyErr(err.code));
         }
       }
 
-      // Transação Firestore para consumir o código atomicamente
-      // Garante que dois usuários simultâneos não usem o mesmo código
+      // Transação Firestore: consome o código atomicamente
+      // A Security Rule server-side valida independently os mesmos critérios
       async function claimInviteCode(code, uid) {
         const ref = db.collection('inviteCodes').doc(code);
         await db.runTransaction(async (tx) => {
           const snap = await tx.get(ref);
           if (!snap.exists)
-            throw new Error('Código de convite não encontrado.');
+            throw new Error(
+              'Código de convite não encontrado. Verifique se digitou corretamente.',
+            );
           const d = snap.data();
-          if (d.used) throw new Error('Este código já foi utilizado.');
-          if (d.expiresAt?.toDate() < new Date())
-            throw new Error('Código de convite expirado.');
+          if (d.used)
+            throw new Error('Este código de convite já foi utilizado.');
+          if (d.expiresAt && d.expiresAt.toDate() < new Date())
+            throw new Error(
+              'Código de convite expirado. Solicite um novo ao administrador.',
+            );
           tx.update(ref, {
             used: true,
             usedBy: uid,
@@ -1808,38 +2142,40 @@
       async function logoutUser() {
         stopDBListener();
         isAdmin = false;
-        currentUserData = {};
         await auth.signOut();
       }
 
-      // ── Auth state listener ───────────────────────────────
+      // ── onAuthStateChanged ────────────────────────────────
+      // Só processa mudanças de estado quando NÃO estamos no fluxo de signup.
+      // Durante o signup, o controle é manual via _signingUp + onAuthenticated().
       auth.onAuthStateChanged(async (user) => {
+        if (_signingUp) return; // ← suprime durante o cadastro
+
         if (user) {
           currentUser = user;
+          let userData = {};
           try {
-            // Lê o documento do usuário para saber approved e admin
             const snap = await db.collection('users').doc(user.uid).get();
-            currentUserData = snap.exists ? snap.data() : {};
+            userData = snap.exists ? snap.data() : {};
           } catch {
-            currentUserData = {};
+            userData = {};
           }
 
-          if (!currentUserData.approved) {
-            // Conta existe mas não foi aprovada (estado inconsistente)
+          if (!userData.approved) {
+            // Conta existe no Auth mas sem approved (ex: cadastro incompleto anterior)
             await auth.signOut();
             showView('view-auth');
             showAuthErr(
-              'Conta não aprovada. O código de convite pode ser inválido.',
+              'Conta não ativada. O cadastro pode ter sido interrompido. Tente criar a conta novamente.',
             );
             return;
           }
 
-          isAdmin = currentUserData.admin === true;
+          isAdmin = userData.admin === true;
           await onAuthenticated(user);
         } else {
           currentUser = null;
           isAdmin = false;
-          currentUserData = {};
           onLoggedOut();
         }
       });
@@ -1848,8 +2184,9 @@
         if (
           e.key === 'Enter' &&
           document.getElementById('view-auth').classList.contains('active')
-        )
+        ) {
           submitAuth();
+        }
       });
 
       // ══════════════════════════════════════════════════════
@@ -1889,6 +2226,7 @@
         const { id, ...data } = bucket;
         try {
           await bucketsRef(currentUser.uid).doc(id).set(data, { merge: true });
+          // setPill('synced') vem do onSnapshot
         } catch (err) {
           console.error(err);
           setPill('error');
@@ -1896,11 +2234,12 @@
         }
       }
 
+      // Debounce configurable — usa SYNC_DELAY_MS definido pelo usuário
       let _debTimer = null;
-      const debounceSave = (bucket, ms = 500) => {
+      function debounceSave(bucket) {
         clearTimeout(_debTimer);
-        _debTimer = setTimeout(() => saveBucket(bucket), ms);
-      };
+        _debTimer = setTimeout(() => saveBucket(bucket), SYNC_DELAY_MS);
+      }
 
       async function deleteBucket(bucketId) {
         if (!currentUser) return;
@@ -1913,7 +2252,7 @@
       }
 
       // ══════════════════════════════════════════════════════
-      // 5. MIGRATE (localStorage → Firestore, uma vez só)
+      // 5. MIGRATE (localStorage v1/v2 → Firestore)
       // ══════════════════════════════════════════════════════
       async function maybeMigrate(uid) {
         const flagRef = db.collection('users').doc(uid);
@@ -1929,14 +2268,26 @@
         } catch {}
 
         if (!local?.buckets?.length) {
-          await flagRef.update({
-            migrated: true,
-            migratedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          });
+          await flagRef
+            .update({
+              migrated: true,
+              migratedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            })
+            .catch(() =>
+              flagRef.set(
+                {
+                  migrated: true,
+                  migratedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                },
+                { merge: true },
+              ),
+            );
           return;
         }
 
-        toast(`📦 Migrando ${local.buckets.length} buckets…`);
+        toast(
+          `📦 Migrando ${local.buckets.length} buckets do armazenamento local…`,
+        );
         const batch = db.batch();
         for (const b of local.buckets) {
           batch.set(bucketsRef(uid).doc(b.id || uid_()), {
@@ -1953,10 +2304,14 @@
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           });
         }
-        batch.update(flagRef, {
-          migrated: true,
-          migratedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        });
+        batch.set(
+          flagRef,
+          {
+            migrated: true,
+            migratedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true },
+        );
         await batch.commit();
         toast(`✅ ${local.buckets.length} buckets migrados!`);
         localStorage.removeItem('taskboard_v1');
@@ -1964,30 +2319,124 @@
       }
 
       // ══════════════════════════════════════════════════════
-      // 6. ADMIN MODULE — direto no Firestore, sem Functions
+      // 6. ADMIN MODULE
       // ══════════════════════════════════════════════════════
       async function loadAdminStats() {
         ['stat-total', 'stat-used', 'stat-available'].forEach(
           (id) => (document.getElementById(id).textContent = '…'),
         );
         try {
-          // Lê todos os códigos (Security Rule limita esta operação a admins)
           const [allSnap, usedSnap] = await Promise.all([
             db.collection('inviteCodes').get(),
             db.collection('inviteCodes').where('used', '==', true).get(),
           ]);
           const total = allSnap.size;
           const used = usedSnap.size;
-          const available = total - used;
           document.getElementById('stat-total').textContent = total;
           document.getElementById('stat-used').textContent = used;
-          document.getElementById('stat-available').textContent = available;
+          document.getElementById('stat-available').textContent = total - used;
         } catch (err) {
           console.error(err);
           ['stat-total', 'stat-used', 'stat-available'].forEach(
             (id) => (document.getElementById(id).textContent = '—'),
           );
-          toast('Não foi possível carregar estatísticas.');
+        }
+      }
+
+      async function loadActiveCodes() {
+        const wrap = document.getElementById('active-codes-wrap');
+        wrap.innerHTML = '<div class="empty-codes">Carregando…</div>';
+
+        const btn = document.getElementById('btn-refresh-codes');
+        btn.textContent = '↻ Carregando…';
+        btn.disabled = true;
+
+        try {
+          const now = new Date();
+          const snap = await db
+            .collection('inviteCodes')
+            .where('used', '==', false)
+            .get();
+
+          // Filtra expirados client-side (evita índice composto)
+          const active = snap.docs
+            .map((d) => ({ id: d.id, ...d.data() }))
+            .filter((c) => !c.expiresAt || c.expiresAt.toDate() > now)
+            .sort(
+              (a, b) =>
+                (a.expiresAt?.seconds || 0) - (b.expiresAt?.seconds || 0),
+            );
+
+          if (!active.length) {
+            wrap.innerHTML =
+              '<div class="empty-codes">Nenhum código ativo no momento. Gere novos acima.</div>';
+            btn.textContent = '↻ Atualizar';
+            btn.disabled = false;
+            return;
+          }
+
+          const now_ms = now.getTime();
+          const rows = active
+            .map((c) => {
+              const exp = c.expiresAt ? c.expiresAt.toDate() : null;
+              const diffDays = exp
+                ? Math.ceil((exp - now_ms) / 86400000)
+                : null;
+              const expiryClass =
+                diffDays === null ? '' : diffDays <= 3 ? 'soon' : 'ok';
+              const expiryText = exp
+                ? `vence em ${diffDays}d (${exp.toLocaleDateString('pt-BR')})`
+                : '—';
+
+              return `<tr>
+        <td><span class="code-val">${c.id}</span></td>
+        <td><span class="code-expiry ${expiryClass}">${expiryText}</span></td>
+        <td>
+          <div class="code-actions">
+            <button class="btn-icon" onclick="copyCode('${c.id}')" title="Copiar código">⎘</button>
+            <button class="btn-icon danger" onclick="deleteCode('${c.id}')" title="Revogar código">✕</button>
+          </div>
+        </td>
+      </tr>`;
+            })
+            .join('');
+
+          wrap.innerHTML = `
+      <div class="codes-table-wrap">
+        <table class="codes-table">
+          <thead><tr>
+            <th>Código</th>
+            <th>Validade</th>
+            <th style="width:80px">Ações</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+        } catch (err) {
+          console.error(err);
+          wrap.innerHTML =
+            '<div class="empty-codes" style="color:var(--accent0)">Erro ao carregar. Verifique as regras do Firestore.</div>';
+        } finally {
+          btn.textContent = '↻ Atualizar';
+          btn.disabled = false;
+        }
+      }
+
+      async function deleteCode(code) {
+        if (
+          !confirm(
+            `Revogar o código ${code}? Ele não poderá ser mais utilizado.`,
+          )
+        )
+          return;
+        try {
+          await db.collection('inviteCodes').doc(code).delete();
+          toast(`Código ${code} revogado.`);
+          loadActiveCodes();
+          loadAdminStats();
+        } catch (err) {
+          console.error(err);
+          toast('Falha ao revogar código.');
         }
       }
 
@@ -2027,8 +2476,9 @@
           await batch.commit();
           _lastCodes = codes;
           _lastTTL = ttlDays;
-          renderCodes(codes, ttlDays);
+          renderGeneratedCodes(codes, ttlDays);
           loadAdminStats();
+          loadActiveCodes();
           toast(
             `✦ ${codes.length} código${codes.length > 1 ? 's' : ''} gerado${codes.length > 1 ? 's' : ''}!`,
           );
@@ -2051,27 +2501,23 @@
           toast('Você já é administrador.');
           return;
         }
-
-        if (!confirm(`Promover o usuário ${uid} a administrador?`)) return;
+        if (!confirm(`Promover o usuário UID: ${uid} a administrador?`)) return;
 
         try {
-          // Security Rule garante que apenas admins podem alterar o campo "admin" de outro usuário
           await db.collection('users').doc(uid).update({
             admin: true,
             promotedBy: currentUser.uid,
             promotedAt: firebase.firestore.FieldValue.serverTimestamp(),
           });
           document.getElementById('promote-uid').value = '';
-          toast(`✅ Usuário promovido. Ele precisa fazer logout/login.`);
+          toast('✅ Usuário promovido. Ele precisa fazer logout e login.');
         } catch (err) {
           console.error(err);
-          toast(
-            'Falha: verifique se o UID está correto e se o usuário existe.',
-          );
+          toast('Falha: verifique se o UID está correto e o usuário existe.');
         }
       }
 
-      function renderCodes(codes, ttl) {
+      function renderGeneratedCodes(codes, ttl) {
         document.getElementById('codes-count').textContent = codes.length;
         document.getElementById('codes-ttl').textContent = ttl;
         document.getElementById('codes-grid').innerHTML = codes
@@ -2120,7 +2566,6 @@
           .catch(() => toast('Não foi possível copiar.'));
       }
 
-      // Gera código XXXX-XXXX sem caracteres ambíguos
       function makeCode() {
         const c = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
         const s = () =>
@@ -2256,10 +2701,11 @@
             }
             return;
           }
+
           const chk = e.target.closest('.task-check');
           if (chk) {
-            const bucket = findBucketByTask(chk.dataset.taskId);
-            const task = findTask(chk.dataset.taskId);
+            const bucket = findBucketByTask(chk.dataset.taskId),
+              task = findTask(chk.dataset.taskId);
             if (task && bucket) {
               task.completed = chk.checked;
               refreshTask(task);
@@ -2267,10 +2713,11 @@
             }
             return;
           }
+
           const exp = e.target.closest('.btn-expand');
           if (exp) {
-            const bucket = findBucketByTask(exp.dataset.taskId);
-            const task = findTask(exp.dataset.taskId);
+            const bucket = findBucketByTask(exp.dataset.taskId),
+              task = findTask(exp.dataset.taskId);
             if (task && bucket) {
               task.expanded = !task.expanded;
               refreshTask(task);
@@ -2278,6 +2725,7 @@
             }
             return;
           }
+
           const del = e.target.closest('.delete-task');
           if (del) {
             const bucket = findBucketByTask(del.dataset.taskId);
@@ -2295,6 +2743,7 @@
             }
             return;
           }
+
           const addBtn = e.target.closest('.btn-add-task');
           if (addBtn) {
             commitTask(
@@ -2305,6 +2754,7 @@
             );
             return;
           }
+
           if (e.target.closest('#add-bucket-card')) {
             openNewBucketModal();
             return;
@@ -2456,7 +2906,10 @@
           .classList.toggle('active', panel === 'admin');
         document.getElementById('btn-add-bucket').style.display =
           panel === 'board' ? '' : 'none';
-        if (panel === 'admin') loadAdminStats();
+        if (panel === 'admin') {
+          loadAdminStats();
+          loadActiveCodes();
+        }
       }
 
       // ══════════════════════════════════════════════════════
@@ -2490,7 +2943,6 @@
         clearTimeout(_toastT);
         _toastT = setTimeout(() => el.classList.remove('show'), ms);
       }
-
       function showView(id) {
         document
           .querySelectorAll('.view')
@@ -2531,15 +2983,30 @@
       // 10. BOOT
       // ══════════════════════════════════════════════════════
       async function onAuthenticated(user) {
+        currentUser = user;
+        // Re-lê userData para garantir o estado mais recente (importante após signup)
+        let userData = {};
+        try {
+          const snap = await db.collection('users').doc(user.uid).get();
+          userData = snap.exists ? snap.data() : {};
+        } catch {}
+        isAdmin = userData.admin === true;
+
         updateUserBadge(user);
         document.getElementById('nav-admin').style.display = isAdmin
           ? ''
           : 'none';
+
+        // Inicializa o delay selecionado no botão correto
+        const saved = parseInt(localStorage.getItem(LS_DELAY)) || 3000;
+        setDelay(saved);
+
         try {
           await maybeMigrate(user.uid);
         } catch (e) {
           console.warn('Migração falhou:', e);
         }
+
         showView('view-app');
         setAuthBusy(false);
         startDBListener(user.uid);
@@ -2550,12 +3017,13 @@
         _lastCodes = [];
         document.getElementById('codes-output').classList.remove('visible');
         document.getElementById('nav-admin').style.display = 'none';
+        document.getElementById('signup-steps').classList.remove('visible');
         switchPanel('board');
         showView('view-auth');
         setPill('connecting');
       }
 
-      // Safety timeout para caso o SDK demore
+      // Safety timeout
       setTimeout(() => {
         if (
           document.getElementById('view-loading').classList.contains('active')
