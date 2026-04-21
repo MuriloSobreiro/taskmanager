@@ -683,6 +683,7 @@
         transition: width 0.4s ease;
       }
 
+      /* ── task list ── */
       .task-list {
         overflow-y: auto;
         flex: 1;
@@ -700,30 +701,86 @@
 
       .task-item {
         padding: 2px 8px;
+        position: relative;
       }
+
+      /* drag-and-drop states */
+      .task-item.dragging {
+        opacity: 0.35;
+      }
+      .task-item.drag-over-top::before,
+      .task-item.drag-over-bottom::after {
+        content: '';
+        display: block;
+        height: 2px;
+        background: var(--accent-color, var(--accent1));
+        border-radius: 2px;
+        margin: 0 4px;
+      }
+      .task-item.drag-over-top::before {
+        position: absolute;
+        top: 0;
+        left: 8px;
+        right: 8px;
+      }
+      .task-item.drag-over-bottom::after {
+        position: absolute;
+        bottom: 0;
+        left: 8px;
+        right: 8px;
+      }
+
+      /* ── collapsed row ── */
       .task-main {
         display: flex;
-        align-items: center;
-        gap: 7px;
-        padding: 6px 5px;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 7px 4px 5px;
         border-radius: var(--radius-sm);
         transition: background 0.12s;
-        min-height: 36px;
       }
       .task-main:hover {
         background: rgba(255, 255, 255, 0.04);
       }
 
+      /* drag handle — aligned to first line */
+      .drag-handle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        min-width: 16px;
+        height: 20px;
+        margin-top: 1px;
+        color: var(--border);
+        cursor: grab;
+        font-size: 13px;
+        line-height: 1;
+        flex-shrink: 0;
+        transition: color 0.15s;
+        touch-action: none;
+        user-select: none;
+      }
+      .task-main:hover .drag-handle {
+        color: var(--muted);
+      }
+      .drag-handle:active {
+        cursor: grabbing;
+      }
+
+      /* checkbox — aligned to first line */
       .task-check {
         appearance: none;
         -webkit-appearance: none;
         width: 16px;
         height: 16px;
         min-width: 16px;
+        margin-top: 2px;
         border: 1.5px solid var(--border);
         border-radius: 4px;
         cursor: pointer;
         position: relative;
+        flex-shrink: 0;
         transition:
           background 0.15s,
           border-color 0.15s;
@@ -748,30 +805,74 @@
         transform: rotate(45deg);
       }
 
-      .task-text {
+      /* middle column: title + badges stacked */
+      .task-content {
         flex: 1;
         min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      /* title line — truncated */
+      .task-text {
         font-size: clamp(12px, 1.3vw, 13.5px);
         color: var(--text);
-        border: none;
-        background: transparent;
-        outline: none;
         font-family: 'DM Sans', sans-serif;
-        cursor: text;
         transition: color 0.2s;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-      }
-      .task-text:focus {
-        white-space: normal;
-        overflow: visible;
+        line-height: 1.45;
       }
       .task-item.done .task-text {
         color: var(--done-text);
         text-decoration: line-through;
       }
 
+      /* badges line — sits below title */
+      .task-badges {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-family: 'DM Mono', monospace;
+        white-space: nowrap;
+        line-height: 1.4;
+      }
+      .badge-p2 {
+        background: rgba(52, 211, 153, 0.12);
+        color: var(--accent5);
+      }
+      .badge-p3 {
+        background: rgba(251, 191, 36, 0.12);
+        color: #fbbf24;
+      }
+      .badge-p4 {
+        background: rgba(251, 146, 60, 0.15);
+        color: var(--accent7);
+      }
+      .badge-p5 {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--accent0);
+      }
+      .badge-date {
+        background: rgba(96, 165, 250, 0.1);
+        color: var(--accent4);
+      }
+      .badge-date.overdue {
+        background: rgba(255, 107, 107, 0.15);
+        color: var(--accent0);
+      }
+
+      /* expand + delete — aligned to first line */
       .btn-expand {
         background: transparent;
         border: none;
@@ -782,7 +883,8 @@
         font-size: 10px;
         flex-shrink: 0;
         min-width: 24px;
-        min-height: 24px;
+        height: 22px;
+        margin-top: 0;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -800,20 +902,73 @@
         color: var(--accent-color);
       }
 
-      .task-desc-wrap {
+      /* ── expanded detail panel ── */
+      .task-detail {
         overflow: hidden;
         max-height: 0;
         opacity: 0;
         transition:
-          max-height 0.28s ease,
-          opacity 0.22s;
+          max-height 0.35s ease,
+          opacity 0.25s;
       }
-      .task-desc-wrap.open {
-        max-height: 200px;
+      .task-detail.open {
+        max-height: 800px;
         opacity: 1;
       }
+
+      .task-detail-inner {
+        margin: 4px 5px 12px 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* label + field wrapper */
+      .detail-field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .detail-label {
+        font-size: 10.5px;
+        font-weight: 500;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-family: 'DM Mono', monospace;
+      }
+
+      /* full editable title — auto-sizes to content */
+      .task-title-full {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 8px 10px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: clamp(12px, 1.3vw, 13.5px);
+        font-weight: 500;
+        color: var(--text);
+        resize: none;
+        outline: none;
+        line-height: 1.5;
+        overflow: hidden;
+        transition: border-color 0.15s;
+        /* native auto-grow where supported */
+        field-sizing: content;
+        min-height: 36px;
+      }
+      .task-title-full:focus {
+        border-color: var(--accent-color);
+      }
+      .task-item.done .task-title-full {
+        color: var(--done-text);
+        text-decoration: line-through;
+      }
+
+      /* description */
       .task-desc {
-        margin: 2px 5px 8px 28px;
+        width: 100%;
         padding: 8px 10px;
         background: var(--surface2);
         border: 1px solid var(--border);
@@ -821,14 +976,14 @@
         font-family: 'DM Sans', sans-serif;
         font-size: clamp(11px, 1.2vw, 12.5px);
         color: var(--muted);
-        resize: none;
-        width: calc(100% - 33px);
+        resize: vertical;
         outline: none;
         line-height: 1.55;
-        min-height: 54px;
+        min-height: 60px;
         transition:
           border-color 0.15s,
           color 0.15s;
+        field-sizing: content;
       }
       .task-desc:focus {
         border-color: var(--accent-color);
@@ -836,6 +991,79 @@
       }
       .task-desc::placeholder {
         color: #3a3a42;
+      }
+
+      /* date + priority side by side */
+      .task-meta-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      @media (max-width: 360px) {
+        .task-meta-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .task-date-input {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 7px 10px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 12.5px;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.15s;
+        cursor: pointer;
+        color-scheme: dark;
+      }
+      .task-date-input:focus {
+        border-color: var(--accent4);
+      }
+      .task-date-input::-webkit-calendar-picker-indicator {
+        filter: invert(0.5);
+        cursor: pointer;
+      }
+
+      .task-priority-select {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 7px 10px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 12.5px;
+        color: var(--text);
+        outline: none;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath stroke='%236b6b75' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        padding-right: 28px;
+        transition: border-color 0.15s;
+      }
+      .task-priority-select:focus {
+        border-color: var(--accent3);
+      }
+      .task-priority-select.prio-2 {
+        border-color: rgba(52, 211, 153, 0.4);
+        color: var(--accent5);
+      }
+      .task-priority-select.prio-3 {
+        border-color: rgba(251, 191, 36, 0.4);
+        color: #fbbf24;
+      }
+      .task-priority-select.prio-4 {
+        border-color: rgba(251, 146, 60, 0.4);
+        color: var(--accent7);
+      }
+      .task-priority-select.prio-5 {
+        border-color: rgba(239, 68, 68, 0.4);
+        color: var(--accent0);
       }
 
       .bucket-footer {
@@ -2639,19 +2867,133 @@
         board.appendChild(nc);
 
         wireBoard();
+        // Auto-grow any already-expanded textareas after render
+        requestAnimationFrame(() => initAutoGrow(board));
+      }
+
+      // Priority config
+      const PRIORITIES = [
+        { val: '', label: '— Sem prioridade', cls: '' },
+        { val: '1', label: '🟢 Baixa', cls: 'prio-2' },
+        { val: '2', label: '🟡 Média', cls: 'prio-3' },
+        { val: '3', label: '🔴 Alta', cls: 'prio-4' },
+        { val: '4', label: '🚨 Urgente', cls: 'prio-5' },
+      ];
+
+      function priorityLabel(val) {
+        return (
+          PRIORITIES.find((p) => p.val === (val ?? ''))?.label ||
+          '— Sem prioridade'
+        );
+      }
+
+      function priorityBadgeClass(val) {
+        if (!val) return '';
+        return (
+          ['', 'badge-p2', 'badge-p3', 'badge-p4', 'badge-p5'][parseInt(val)] ||
+          ''
+        );
+      }
+
+      function prioritySelectClass(val) {
+        if (!val) return '';
+        return (
+          ['', 'prio-2', 'prio-3', 'prio-4', 'prio-5'][parseInt(val)] || ''
+        );
+      }
+
+      function formatDateBadge(iso) {
+        if (!iso) return null;
+        const d = new Date(iso + 'T00:00:00');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const diff = Math.round((d - today) / 86400000);
+        const label =
+          diff === 0
+            ? 'hoje'
+            : diff === 1
+              ? 'amanhã'
+              : diff === -1
+                ? 'ontem'
+                : diff < 0
+                  ? `${Math.abs(diff)}d atrás`
+                  : d.toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                    });
+        return { label, overdue: diff < 0 };
       }
 
       function taskHTML(t) {
+        const prioVal = t.priority ?? '';
+
+        // Collapsed badges (only when values are set)
+        const prioBadge = prioVal
+          ? `<span class="badge ${priorityBadgeClass(prioVal)}">${priorityLabel(prioVal).split(' ').slice(0, 2).join(' ')}</span>`
+          : '';
+        const dateInfo = t.dueDate ? formatDateBadge(t.dueDate) : null;
+        const dateBadge = dateInfo
+          ? `<span class="badge badge-date${dateInfo.overdue ? ' overdue' : ''}">📅 ${dateInfo.label}</span>`
+          : '';
+        const badgesRow =
+          prioBadge || dateBadge
+            ? `<div class="task-badges">${prioBadge}${dateBadge}</div>`
+            : '';
+
+        // Priority options
+        const prioOptions = PRIORITIES.map(
+          (p) =>
+            `<option value="${p.val}"${prioVal === p.val ? ' selected' : ''}>${p.label}</option>`,
+        ).join('');
+
         return `
-    <div class="task-item${t.completed ? ' done' : ''}" data-task-id="${t.id}">
+    <div class="task-item${t.completed ? ' done' : ''}" data-task-id="${t.id}" draggable="true">
+
+      <!-- collapsed row -->
       <div class="task-main">
+        <span class="drag-handle" title="Arrastar para reordenar">⠿</span>
         <input type="checkbox" class="task-check" ${t.completed ? 'checked' : ''} data-task-id="${t.id}" />
-        <input class="task-text" type="text" value="${esc(t.title)}" data-task-id="${t.id}" spellcheck="false" />
-        <button class="btn-expand${t.expanded ? ' open' : ''}" data-task-id="${t.id}" title="Descrição">▾</button>
+        <div class="task-content">
+          <span class="task-text">${esc(t.title)}</span>
+          ${badgesRow}
+        </div>
+        <button class="btn-expand${t.expanded ? ' open' : ''}" data-task-id="${t.id}" title="Expandir detalhes">▾</button>
         <button class="btn-icon danger delete-task" data-task-id="${t.id}" title="Excluir">✕</button>
       </div>
-      <div class="task-desc-wrap${t.expanded ? ' open' : ''}">
-        <textarea class="task-desc" data-task-id="${t.id}" placeholder="Adicione uma descrição…" rows="3" spellcheck="false">${esc(t.description || '')}</textarea>
+
+      <!-- expanded detail -->
+      <div class="task-detail${t.expanded ? ' open' : ''}">
+        <div class="task-detail-inner">
+
+          <div class="detail-field">
+            <label class="detail-label">Título</label>
+            <textarea class="task-title-full" data-task-id="${t.id}" data-field="title"
+              rows="1" spellcheck="false">${esc(t.title)}</textarea>
+          </div>
+
+          <div class="detail-field">
+            <label class="detail-label">Descrição</label>
+            <textarea class="task-desc" data-task-id="${t.id}" data-field="description"
+              rows="3" spellcheck="false" placeholder="Adicione uma descrição…">${esc(t.description || '')}</textarea>
+          </div>
+
+          <div class="task-meta-row">
+            <div class="detail-field">
+              <label class="detail-label">Data</label>
+              <input type="date" class="task-date-input"
+                data-task-id="${t.id}" data-field="dueDate"
+                value="${t.dueDate || ''}" />
+            </div>
+            <div class="detail-field">
+              <label class="detail-label">Prioridade</label>
+              <select class="task-priority-select ${prioritySelectClass(prioVal)}"
+                data-task-id="${t.id}" data-field="priority">
+                ${prioOptions}
+              </select>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   `;
@@ -2664,7 +3006,10 @@
         if (!el) return;
         const tmp = document.createElement('div');
         tmp.innerHTML = taskHTML(task);
-        el.replaceWith(tmp.firstElementChild);
+        const newEl = tmp.firstElementChild;
+        el.replaceWith(newEl);
+        // If task is expanded, immediately size its textareas to fit content
+        if (task.expanded) initAutoGrow(newEl);
         refreshMeta(findBucketByTask(task.id));
       }
 
@@ -2686,12 +3031,18 @@
       // ══════════════════════════════════════════════════════
       // 8. EVENTS
       // ══════════════════════════════════════════════════════
+
+      // Drag state
+      let _dragId = null; // task id being dragged
+      let _dragBucket = null; // bucket id where drag started
+
       function wireBoard() {
         const board = document.getElementById('board');
         const b2 = board.cloneNode(true);
         board.replaceWith(b2);
         const b = document.getElementById('board');
 
+        // ── Click delegation ──────────────────────────────
         b.addEventListener('click', (e) => {
           const delBucket = e.target.closest('.delete-bucket');
           if (delBucket) {
@@ -2761,6 +3112,7 @@
           }
         });
 
+        // ── Keyboard shortcuts ────────────────────────────
         b.addEventListener('keydown', (e) => {
           if (
             e.key === 'Enter' &&
@@ -2773,20 +3125,42 @@
             openNewBucketModal();
         });
 
+        // ── Input: live edit + debounce save + auto-grow ──
         b.addEventListener('input', (e) => {
-          const tid = e.target.dataset.taskId,
-            bid = e.target.dataset.bucketId;
-          if (e.target.classList.contains('task-desc')) {
+          const tid = e.target.dataset.taskId;
+          const bid = e.target.dataset.bucketId;
+          const field = e.target.dataset.field;
+
+          // JS fallback auto-grow (no-op when field-sizing:content is supported)
+          if (
+            e.target.classList.contains('task-title-full') ||
+            e.target.classList.contains('task-desc')
+          ) {
+            if (getComputedStyle(e.target).fieldSizing !== 'content') {
+              e.target.style.height = 'auto';
+              e.target.style.height = e.target.scrollHeight + 'px';
+            }
+          }
+
+          // Task detail fields
+          if (tid && field) {
             const t = findTask(tid);
-            if (t) t.description = e.target.value;
+            if (!t) return;
+            if (field === 'title') {
+              t.title = e.target.value;
+              const row = e.target.closest('.task-item');
+              const span = row?.querySelector('.task-text');
+              if (span) span.textContent = t.title;
+            } else {
+              t[field] = e.target.value;
+            }
             const bk = findBucketByTask(tid);
             if (bk) debounceSave(bk);
-          } else if (e.target.classList.contains('task-text')) {
-            const t = findTask(tid);
-            if (t) t.title = e.target.value;
-            const bk = findBucketByTask(tid);
-            if (bk) debounceSave(bk);
-          } else if (e.target.classList.contains('bucket-name')) {
+            return;
+          }
+
+          // Bucket name
+          if (e.target.classList.contains('bucket-name')) {
             const bk = state.buckets.find((x) => x.id === bid);
             if (bk) {
               bk.name = e.target.value;
@@ -2794,14 +3168,32 @@
             }
           }
         });
+        b.addEventListener('change', (e) => {
+          const tid = e.target.dataset.taskId,
+            field = e.target.dataset.field;
+          if (!tid || !field) return;
+          const t = findTask(tid);
+          if (!t) return;
+          t[field] = e.target.value;
 
+          // Update priority select colour class
+          if (field === 'priority') {
+            e.target.className = `task-priority-select ${prioritySelectClass(e.target.value)}`;
+          }
+
+          const bk = findBucketByTask(tid);
+          if (bk) {
+            // Immediate save for discrete changes (date/priority), debounce for text
+            saveBucket(bk);
+            // Also refresh the collapsed badge row
+            refreshTask(t);
+          }
+        });
+
+        // ── Blur guard: prevent empty bucket name ─────────
         b.addEventListener(
           'blur',
           (e) => {
-            if (e.target.classList.contains('task-text')) {
-              const t = findTask(e.target.dataset.taskId);
-              if (t && !e.target.value.trim()) e.target.value = t.title;
-            }
             if (e.target.classList.contains('bucket-name')) {
               const bk = state.buckets.find(
                 (x) => x.id === e.target.dataset.bucketId,
@@ -2811,6 +3203,97 @@
           },
           true,
         );
+
+        // ── Drag-and-drop reordering ──────────────────────
+        b.addEventListener('dragstart', (e) => {
+          const item = e.target.closest('.task-item[draggable]');
+          if (!item) return;
+          _dragId = item.dataset.taskId;
+          _dragBucket = item.closest('.bucket')?.dataset.bucketId;
+          item.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', _dragId); // required for Firefox
+        });
+
+        b.addEventListener('dragend', (e) => {
+          const item = e.target.closest('.task-item');
+          if (item) item.classList.remove('dragging');
+          // Clear all visual indicators
+          b.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(
+            (el) => el.classList.remove('drag-over-top', 'drag-over-bottom'),
+          );
+          _dragId = null;
+          _dragBucket = null;
+        });
+
+        b.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          const target = e.target.closest('.task-item');
+          if (!target || target.dataset.taskId === _dragId) return;
+
+          // Clear previous indicators
+          b.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(
+            (el) => el.classList.remove('drag-over-top', 'drag-over-bottom'),
+          );
+
+          const rect = target.getBoundingClientRect();
+          const mid = rect.top + rect.height / 2;
+          target.classList.add(
+            e.clientY < mid ? 'drag-over-top' : 'drag-over-bottom',
+          );
+        });
+
+        b.addEventListener('dragleave', (e) => {
+          const target = e.target.closest('.task-item');
+          if (target)
+            target.classList.remove('drag-over-top', 'drag-over-bottom');
+        });
+
+        b.addEventListener('drop', (e) => {
+          e.preventDefault();
+          const target = e.target.closest('.task-item');
+          if (!target || !_dragId) return;
+
+          const targetId = target.dataset.taskId;
+          const targetBucket = target.closest('.bucket')?.dataset.bucketId;
+
+          if (targetId === _dragId) return;
+
+          // Only reorder within the same bucket for now
+          if (targetBucket !== _dragBucket) {
+            toast('Mova tarefas apenas dentro do mesmo bucket.');
+            return;
+          }
+
+          const bucket = state.buckets.find((b) => b.id === _dragBucket);
+          if (!bucket) return;
+
+          const tasks = [...bucket.tasks];
+          const fromIdx = tasks.findIndex((t) => t.id === _dragId);
+          const toIdx = tasks.findIndex((t) => t.id === targetId);
+          if (fromIdx === -1 || toIdx === -1) return;
+
+          // Determine insert position (before or after target)
+          const rect = target.getBoundingClientRect();
+          const after = e.clientY >= rect.top + rect.height / 2;
+
+          const [moved] = tasks.splice(fromIdx, 1);
+          // After removing the dragged item, recalculate target index
+          const newToIdx = tasks.findIndex((t) => t.id === targetId);
+          tasks.splice(after ? newToIdx + 1 : newToIdx, 0, moved);
+
+          bucket.tasks = tasks;
+          saveBucket(bucket);
+
+          // Re-render only this task list (avoids full board flash)
+          const list = document.getElementById(`tasks-${_dragBucket}`);
+          if (list) {
+            list.innerHTML = tasks.map((t) => taskHTML(t)).join('');
+            initAutoGrow(list);
+          }
+          refreshMeta(bucket);
+        });
       }
 
       function commitTask(bucketId, input) {
@@ -2822,6 +3305,8 @@
           id: uid_(),
           title,
           description: '',
+          dueDate: '',
+          priority: '',
           completed: false,
           expanded: false,
           createdAt: Date.now(),
@@ -2830,9 +3315,24 @@
         saveBucket(bucket);
         const list = document.getElementById(`tasks-${bucketId}`);
         list.insertAdjacentHTML('beforeend', taskHTML(task));
+        initAutoGrow(list);
         refreshMeta(bucket);
         input.value = '';
         list.scrollTop = list.scrollHeight;
+      }
+
+      // Auto-grow textareas to fit content.
+      // Works as a JS fallback for browsers that don't support field-sizing:content.
+      // For browsers that do support it, this is a no-op (height is managed by CSS).
+      function initAutoGrow(container) {
+        container
+          .querySelectorAll('.task-title-full, .task-desc')
+          .forEach((el) => {
+            // Skip if the browser handles it natively via field-sizing
+            if (getComputedStyle(el).fieldSizing === 'content') return;
+            el.style.height = 'auto';
+            el.style.height = Math.max(el.scrollHeight, el.offsetHeight) + 'px';
+          });
       }
 
       // ══════════════════════════════════════════════════════
