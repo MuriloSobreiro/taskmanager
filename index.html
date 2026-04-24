@@ -1645,6 +1645,618 @@
           grid-template-columns: repeat(2, 1fr);
         }
       }
+      /* ════════════════════════════════════════════════
+       CHECKLIST PANEL
+    ════════════════════════════════════════════════ */
+      #panel-checklist {
+        flex: 1;
+        display: none;
+      }
+      #panel-checklist.active {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .cl-panel-inner {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: var(--gap) var(--pad) 60px;
+        max-width: 860px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      /* Sub-nav */
+      .cl-subnav {
+        display: flex;
+        gap: 3px;
+        margin-bottom: 20px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        padding: 3px;
+        align-self: flex-start;
+      }
+      .cl-subnav-tab {
+        padding: 6px 16px;
+        border: none;
+        background: transparent;
+        border-radius: 7px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: clamp(11px, 1.2vw, 13px);
+        font-weight: 500;
+        color: var(--muted);
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          color 0.15s;
+        white-space: nowrap;
+      }
+      .cl-subnav-tab:hover {
+        color: var(--text);
+      }
+      .cl-subnav-tab.active {
+        background: var(--surface);
+        color: var(--text);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+      }
+
+      .cl-subpanel {
+        display: none;
+      }
+      .cl-subpanel.active {
+        display: block;
+      }
+
+      /* Today toolbar */
+      .cl-today-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .cl-date-nav {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .cl-date-nav input[type='date'] {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        color: var(--text);
+        outline: none;
+        cursor: pointer;
+        color-scheme: dark;
+        transition: border-color 0.15s;
+      }
+      .cl-date-nav input[type='date']:focus {
+        border-color: var(--accent2);
+      }
+      .cl-date-nav input[type='date']::-webkit-calendar-picker-indicator {
+        filter: invert(0.5);
+      }
+
+      /* Run card */
+      .cl-run-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 14px;
+        transition: border-color 0.2s;
+      }
+      .cl-run-card.complete {
+        border-color: rgba(52, 211, 153, 0.35);
+        background: rgba(52, 211, 153, 0.03);
+      }
+      .cl-run-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .cl-run-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+      }
+      .cl-run-title {
+        font-weight: 500;
+        font-size: 14px;
+        color: var(--text);
+      }
+      .cl-run-tpl-badge {
+        display: inline-block;
+        font-size: 10.5px;
+        background: rgba(96, 165, 250, 0.12);
+        color: var(--accent4);
+        border-radius: 4px;
+        padding: 1px 6px;
+        font-family: 'DM Mono', monospace;
+      }
+      .cl-run-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .cl-run-pct {
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .cl-run-pct.complete {
+        color: var(--accent5);
+      }
+
+      .cl-progress-bar-wrap {
+        height: 4px;
+        background: var(--border);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-bottom: 12px;
+      }
+      .cl-progress-bar {
+        height: 100%;
+        background: var(--accent2);
+        border-radius: 2px;
+        transition: width 0.4s ease;
+      }
+      .cl-run-card.complete .cl-progress-bar {
+        background: var(--accent5);
+      }
+
+      .cl-run-items {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      .cl-item-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 6px;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: background 0.12s;
+        user-select: none;
+      }
+      .cl-item-row:hover {
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .cl-item-check {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 15px;
+        height: 15px;
+        min-width: 15px;
+        border: 1.5px solid var(--border);
+        border-radius: 3px;
+        cursor: pointer;
+        position: relative;
+        flex-shrink: 0;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+      }
+      .cl-item-check:hover {
+        border-color: var(--accent2);
+      }
+      .cl-item-check:checked {
+        background: var(--accent2);
+        border-color: var(--accent2);
+      }
+      .cl-item-check:checked::after {
+        content: '';
+        position: absolute;
+        top: 1.5px;
+        left: 3.5px;
+        width: 4px;
+        height: 7px;
+        border: 1.5px solid #0e0e10;
+        border-top: none;
+        border-left: none;
+        transform: rotate(45deg);
+      }
+      .cl-item-text {
+        font-size: 13px;
+        color: var(--text);
+        transition: color 0.15s;
+        line-height: 1.4;
+      }
+      .cl-item-row.done .cl-item-text {
+        color: var(--done-text);
+        text-decoration: line-through;
+      }
+
+      /* Empty states */
+      .cl-empty {
+        text-align: center;
+        padding: 48px 20px;
+        color: var(--muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+      .cl-empty-icon {
+        font-size: 2.2rem;
+      }
+      .cl-empty-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.05rem;
+        color: var(--text);
+        font-weight: 700;
+      }
+      .cl-empty-sub {
+        font-size: 12.5px;
+      }
+      .cl-loading {
+        text-align: center;
+        padding: 32px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .cl-section-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .cl-section-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      /* Templates grid */
+      #cl-templates-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 14px;
+      }
+      .cl-tpl-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition: box-shadow 0.2s;
+      }
+      .cl-tpl-card.inactive {
+        opacity: 0.6;
+      }
+      .cl-tpl-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .cl-tpl-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .cl-tpl-name {
+        font-weight: 500;
+        font-size: 14px;
+        color: var(--text);
+      }
+      .cl-tpl-count {
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .cl-tpl-desc {
+        font-size: 12.5px;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+      .cl-tpl-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 2px;
+      }
+      .cl-badge {
+        font-size: 10.5px;
+        font-family: 'DM Mono', monospace;
+        padding: 2px 7px;
+        border-radius: 4px;
+      }
+      .cl-badge-off {
+        background: rgba(107, 114, 128, 0.15);
+        color: var(--muted);
+      }
+
+      /* Modal extensions for checklist/template */
+      .modal-cl {
+        max-width: 500px !important;
+        max-height: 82svh;
+        overflow-y: auto;
+      }
+      .modal-cl input[type='text'],
+      .modal-cl input[type='date'] {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 9px 12px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13.5px;
+        color: var(--text);
+        outline: none;
+        margin-bottom: 0;
+        transition: border-color 0.15s;
+        color-scheme: dark;
+      }
+      .modal-cl input:focus {
+        border-color: var(--accent2);
+      }
+
+      .cl-modal-items {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 4px;
+      }
+      .cl-modal-item-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 6px 8px;
+      }
+      .cl-modal-item-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        color: var(--text);
+      }
+      .cl-modal-item-input::placeholder {
+        color: #3a3a42;
+      }
+
+      /* Toggle switch */
+      .cl-tpl-active-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .cl-toggle-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+      .cl-toggle-wrap input {
+        display: none;
+      }
+      .cl-toggle-track {
+        width: 34px;
+        height: 18px;
+        background: var(--border);
+        border-radius: 9px;
+        position: relative;
+        transition: background 0.2s;
+        flex-shrink: 0;
+      }
+      .cl-toggle-track::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--muted);
+        transition:
+          transform 0.2s,
+          background 0.2s;
+      }
+      .cl-toggle-wrap input:checked + .cl-toggle-track {
+        background: var(--accent5);
+      }
+      .cl-toggle-wrap input:checked + .cl-toggle-track::after {
+        transform: translateX(16px);
+        background: #0e0e10;
+      }
+      .cl-toggle-label {
+        font-size: 13px;
+        color: var(--text);
+      }
+
+      /* Period tabs */
+      .cl-period-tabs {
+        display: flex;
+        gap: 4px;
+      }
+      .cl-period-btn {
+        padding: 5px 14px;
+        border: 1px solid var(--border);
+        background: transparent;
+        border-radius: 7px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 12.5px;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .cl-period-btn:hover {
+        color: var(--text);
+        border-color: #555;
+      }
+      .cl-period-btn.active {
+        background: var(--surface2);
+        color: var(--accent2);
+        border-color: var(--accent2);
+      }
+
+      /* KPI cards */
+      .cl-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .cl-kpi-card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .cl-kpi-value {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 800;
+        line-height: 1;
+        color: var(--text);
+      }
+      .cl-kpi-value.green {
+        color: var(--accent5);
+      }
+      .cl-kpi-value.orange {
+        color: var(--accent1);
+      }
+      .cl-kpi-value.red {
+        color: var(--accent0);
+      }
+      .cl-kpi-label {
+        font-size: 11px;
+        color: var(--muted);
+        font-family: 'DM Mono', monospace;
+      }
+      .cl-delta {
+        font-size: 11px;
+        font-family: 'DM Mono', monospace;
+        margin-top: 2px;
+      }
+      .cl-delta.pos {
+        color: var(--accent5);
+      }
+      .cl-delta.neg {
+        color: var(--accent0);
+      }
+
+      /* Bar chart */
+      .cl-chart-section {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .cl-chart-title {
+        font-size: 12.5px;
+        color: var(--muted);
+        font-weight: 500;
+        margin-bottom: 16px;
+      }
+      .cl-chart-wrap {
+        overflow-x: auto;
+      }
+      .cl-chart-svg {
+        width: 100%;
+        min-width: 280px;
+        height: 120px;
+        display: block;
+        overflow: visible;
+      }
+      .cl-bar-total {
+        fill: rgba(96, 165, 250, 0.3);
+      }
+      .cl-bar-complete {
+        fill: var(--accent2);
+      }
+      .cl-bar-label {
+        font-size: 9px;
+        fill: var(--muted);
+        font-family: 'DM Mono', monospace;
+      }
+      .cl-chart-legend {
+        display: flex;
+        gap: 16px;
+        margin-top: 10px;
+        font-size: 11px;
+        font-family: 'DM Mono', monospace;
+      }
+      .cl-legend-total {
+        color: rgba(96, 165, 250, 0.8);
+      }
+      .cl-legend-complete {
+        color: var(--accent2);
+      }
+      .cl-chart-empty {
+        text-align: center;
+        padding: 24px;
+        color: var(--muted);
+        font-size: 12.5px;
+      }
+
+      /* Breakdown */
+      .cl-breakdown {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .cl-breakdown-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 11px 16px;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+        color: var(--muted);
+        gap: 12px;
+      }
+      .cl-breakdown-row:last-child {
+        border-bottom: none;
+      }
+      .cl-breakdown-row strong {
+        color: var(--text);
+      }
+      .cl-breakdown-row strong.green {
+        color: var(--accent5);
+      }
+
+      @media (max-width: 640px) {
+        .cl-kpi-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .cl-today-toolbar,
+        .cl-section-toolbar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        #cl-templates-grid {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
@@ -1785,6 +2397,13 @@
               onclick="switchPanel('board')"
             >
               📋 Tarefas
+            </button>
+            <button
+              class="nav-tab"
+              id="nav-checklist"
+              onclick="switchPanel('checklist')"
+            >
+              ✅ Checklists
             </button>
             <button
               class="nav-tab admin-tab"
@@ -2086,6 +2705,150 @@
         </div>
       </div>
       <!-- /panel-admin -->
+
+      <!-- ════════════════════════════════════════════════
+       CHECKLIST PANEL
+  ════════════════════════════════════════════════ -->
+      <div id="panel-checklist">
+        <div class="cl-panel-inner">
+          <!-- Sub-nav -->
+          <nav class="cl-subnav">
+            <button
+              class="cl-subnav-tab active"
+              id="cl-tab-today"
+              onclick="clSwitchTab('today')"
+            >
+              📅 Hoje
+            </button>
+            <button
+              class="cl-subnav-tab"
+              id="cl-tab-templates"
+              onclick="clSwitchTab('templates')"
+            >
+              📋 Templates
+            </button>
+            <button
+              class="cl-subnav-tab"
+              id="cl-tab-metrics"
+              onclick="clSwitchTab('metrics')"
+            >
+              📊 Métricas
+            </button>
+          </nav>
+
+          <!-- ── TODAY ──────────────────────────────── -->
+          <div
+            id="cl-sub-today"
+            class="cl-subpanel active"
+          >
+            <div class="cl-today-toolbar">
+              <div class="cl-date-nav">
+                <button
+                  class="btn btn-ghost"
+                  onclick="clNavDay(-1)"
+                  style="padding: 5px 10px"
+                >
+                  ‹
+                </button>
+                <input
+                  type="date"
+                  id="cl-date-input"
+                  onchange="clSetDate(this.value)"
+                />
+                <button
+                  class="btn btn-ghost"
+                  onclick="clNavDay(1)"
+                  style="padding: 5px 10px"
+                >
+                  ›
+                </button>
+                <button
+                  class="btn btn-ghost"
+                  onclick="clGoToday()"
+                  style="font-size: 12px; padding: 5px 12px"
+                >
+                  Hoje
+                </button>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <button
+                  class="btn btn-ghost"
+                  onclick="clOpenFromTemplateModal()"
+                  style="font-size: 12px; padding: 5px 12px"
+                >
+                  📋 Usar template
+                </button>
+                <button
+                  class="btn btn-primary"
+                  onclick="clOpenNewRunModal()"
+                >
+                  + Nova checklist
+                </button>
+              </div>
+            </div>
+            <div id="cl-today-runs">
+              <div class="cl-loading">Carregando…</div>
+            </div>
+          </div>
+
+          <!-- ── TEMPLATES ──────────────────────────── -->
+          <div
+            id="cl-sub-templates"
+            class="cl-subpanel"
+          >
+            <div class="cl-section-toolbar">
+              <span class="cl-section-title">Templates</span>
+              <button
+                class="btn btn-primary"
+                onclick="clOpenNewTemplateModal()"
+              >
+                + Novo template
+              </button>
+            </div>
+            <div id="cl-templates-grid">
+              <div class="cl-loading">Carregando…</div>
+            </div>
+          </div>
+
+          <!-- ── METRICS ────────────────────────────── -->
+          <div
+            id="cl-sub-metrics"
+            class="cl-subpanel"
+          >
+            <div class="cl-today-toolbar">
+              <span class="cl-section-title">Histórico &amp; Métricas</span>
+              <div class="cl-period-tabs">
+                <button
+                  class="cl-period-btn active"
+                  id="cl-period-week"
+                  onclick="clSetPeriod('week')"
+                >
+                  Semana
+                </button>
+                <button
+                  class="cl-period-btn"
+                  id="cl-period-month"
+                  onclick="clSetPeriod('month')"
+                >
+                  Mês
+                </button>
+                <button
+                  class="cl-period-btn"
+                  id="cl-period-year"
+                  onclick="clSetPeriod('year')"
+                >
+                  Ano
+                </button>
+              </div>
+            </div>
+            <div id="cl-metrics-content">
+              <div class="cl-loading">Carregando…</div>
+            </div>
+          </div>
+        </div>
+        <!-- /cl-panel-inner -->
+      </div>
+      <!-- /panel-checklist -->
     </div>
     <!-- /view-app -->
 
@@ -3399,16 +4162,25 @@
           .getElementById('panel-admin')
           .classList.toggle('active', panel === 'admin');
         document
+          .getElementById('panel-checklist')
+          .classList.toggle('active', panel === 'checklist');
+        document
           .getElementById('nav-board')
           .classList.toggle('active', panel === 'board');
         document
           .getElementById('nav-admin')
           .classList.toggle('active', panel === 'admin');
+        document
+          .getElementById('nav-checklist')
+          .classList.toggle('active', panel === 'checklist');
         document.getElementById('btn-add-bucket').style.display =
           panel === 'board' ? '' : 'none';
         if (panel === 'admin') {
           loadAdminStats();
           loadActiveCodes();
+        }
+        if (panel === 'checklist') {
+          clOnPanelEnter();
         }
       }
 
@@ -3510,11 +4282,13 @@
         showView('view-app');
         setAuthBusy(false);
         startDBListener(user.uid);
+        clInit(user.uid);
       }
 
       function onLoggedOut() {
         state.buckets = [];
         _lastCodes = [];
+        clDestroy();
         document.getElementById('codes-output').classList.remove('visible');
         document.getElementById('nav-admin').style.display = 'none';
         document.getElementById('signup-steps').classList.remove('visible');
@@ -3530,6 +4304,914 @@
         )
           showView('view-auth');
       }, 5000);
+
+      // ══════════════════════════════════════════════════════
+      // CHECKLIST MODULE
+      // Colections: users/{uid}/clTemplates  &  users/{uid}/clRuns
+      // ══════════════════════════════════════════════════════
+
+      // ─── State ───────────────────────────────────────────
+      const clState = {
+        templates: [],
+        allRuns: [], // últimos 90 dias (feed do listener)
+        runs: [], // filtrado pela data selecionada
+        currentDate: '',
+        subTab: 'today',
+        metricsPeriod: 'week',
+        listenersStarted: false,
+      };
+
+      let _unsubClTpl = null;
+      let _unsubClRuns = null;
+
+      // ─── Firestore refs ──────────────────────────────────
+      const clTplRef = (uid) =>
+        db.collection('users').doc(uid).collection('clTemplates');
+      const clRunsRef = (uid) =>
+        db.collection('users').doc(uid).collection('clRuns');
+
+      // ─── Date helpers ────────────────────────────────────
+      function clTodayISO() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      }
+
+      // ─── Init / Destroy ──────────────────────────────────
+      function clInit(uid) {
+        if (clState.listenersStarted) return;
+        clState.currentDate = clTodayISO();
+        document.getElementById('cl-date-input').value = clState.currentDate;
+
+        // Templates listener
+        _unsubClTpl = clTplRef(uid)
+          .orderBy('createdAt', 'asc')
+          .onSnapshot(
+            (snap) => {
+              clState.templates = snap.docs.map((d) => ({
+                id: d.id,
+                ...d.data(),
+              }));
+              if (clState.subTab === 'templates') clRenderTemplates();
+            },
+            (err) => console.error('clTpl listener:', err),
+          );
+
+        // Runs listener — últimos 90 dias para métricas históricas
+        const since = new Date();
+        since.setDate(since.getDate() - 90);
+        const sinceISO = `${since.getFullYear()}-${String(since.getMonth() + 1).padStart(2, '0')}-${String(since.getDate()).padStart(2, '0')}`;
+        _unsubClRuns = clRunsRef(uid)
+          .where('date', '>=', sinceISO)
+          .orderBy('date', 'desc')
+          .onSnapshot(
+            (snap) => {
+              clState.allRuns = snap.docs.map((d) => ({
+                id: d.id,
+                ...d.data(),
+              }));
+              clState.runs = clState.allRuns.filter(
+                (r) => r.date === clState.currentDate,
+              );
+              if (clState.subTab === 'today') clRenderToday();
+              if (clState.subTab === 'metrics') clRenderMetrics();
+            },
+            (err) => console.error('clRuns listener:', err),
+          );
+
+        clState.listenersStarted = true;
+      }
+
+      function clDestroy() {
+        if (_unsubClTpl) {
+          _unsubClTpl();
+          _unsubClTpl = null;
+        }
+        if (_unsubClRuns) {
+          _unsubClRuns();
+          _unsubClRuns = null;
+        }
+        clState.templates = [];
+        clState.allRuns = [];
+        clState.runs = [];
+        clState.listenersStarted = false;
+        // Reset sub-tab to today
+        clState.subTab = 'today';
+        ['today', 'templates', 'metrics'].forEach((t) => {
+          const tab = document.getElementById(`cl-tab-${t}`);
+          const sub = document.getElementById(`cl-sub-${t}`);
+          if (tab) tab.classList.toggle('active', t === 'today');
+          if (sub) sub.classList.toggle('active', t === 'today');
+        });
+      }
+
+      // Chamado ao entrar no painel de checklists via switchPanel
+      function clOnPanelEnter() {
+        if (clState.subTab === 'today') clRenderToday();
+        if (clState.subTab === 'templates') clRenderTemplates();
+        if (clState.subTab === 'metrics') clRenderMetrics();
+      }
+
+      // ─── Sub-tab ─────────────────────────────────────────
+      function clSwitchTab(tab) {
+        clState.subTab = tab;
+        ['today', 'templates', 'metrics'].forEach((t) => {
+          document
+            .getElementById(`cl-tab-${t}`)
+            .classList.toggle('active', t === tab);
+          document
+            .getElementById(`cl-sub-${t}`)
+            .classList.toggle('active', t === tab);
+        });
+        if (tab === 'today') clRenderToday();
+        if (tab === 'templates') clRenderTemplates();
+        if (tab === 'metrics') clRenderMetrics();
+      }
+
+      // ─── Date navigation ─────────────────────────────────
+      function clNavDay(dir) {
+        const d = new Date(clState.currentDate + 'T12:00:00');
+        d.setDate(d.getDate() + dir);
+        clSetDate(
+          `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`,
+        );
+      }
+      function clGoToday() {
+        clSetDate(clTodayISO());
+      }
+      function clSetDate(iso) {
+        clState.currentDate = iso;
+        document.getElementById('cl-date-input').value = iso;
+        clState.runs = clState.allRuns.filter((r) => r.date === iso);
+        clRenderToday();
+      }
+
+      // ══════════════════════════════════════════════════════
+      // RENDER — Today
+      // ══════════════════════════════════════════════════════
+      function clRenderToday() {
+        const wrap = document.getElementById('cl-today-runs');
+        if (!wrap) return;
+        if (!clState.runs.length) {
+          const iso = clState.currentDate;
+          const label =
+            iso === clTodayISO()
+              ? 'hoje'
+              : iso > clTodayISO()
+                ? `em ${new Date(iso + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}`
+                : `em ${new Date(iso + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' })}`;
+          wrap.innerHTML = `
+      <div class="cl-empty">
+        <div class="cl-empty-icon">✅</div>
+        <div class="cl-empty-title">Nenhuma checklist ${label}</div>
+        <div class="cl-empty-sub">Crie uma do zero ou use um template existente.</div>
+      </div>`;
+          return;
+        }
+        wrap.innerHTML = clState.runs.map((r) => clRunCardHTML(r)).join('');
+      }
+
+      function clRunCardHTML(run) {
+        const done =
+          run.completedCount ?? (run.items || []).filter((i) => i.done).length;
+        const total = run.totalCount ?? (run.items || []).length;
+        const pct = total ? Math.round((done / total) * 100) : 0;
+        const complete = done === total && total > 0;
+
+        const tplBadge = run.templateName
+          ? `<span class="cl-run-tpl-badge">${esc(run.templateName)}</span>`
+          : '<span class="cl-run-tpl-badge" style="background:rgba(107,114,128,.1);color:var(--muted)">custom</span>';
+
+        const items = (run.items || [])
+          .map(
+            (item) => `
+    <div class="cl-item-row${item.done ? ' done' : ''}"
+         onclick="clToggleItem('${esc(run.id)}','${esc(item.id)}')">
+      <input type="checkbox" class="cl-item-check" ${item.done ? 'checked' : ''}
+             onclick="event.stopPropagation();clToggleItem('${esc(run.id)}','${esc(item.id)}')" />
+      <span class="cl-item-text">${esc(item.text)}</span>
+    </div>`,
+          )
+          .join('');
+
+        return `
+    <div class="cl-run-card${complete ? ' complete' : ''}" id="clrun-${esc(run.id)}">
+      <div class="cl-run-header">
+        <div class="cl-run-meta">
+          <span class="cl-run-title">${esc(run.title)}</span>
+          ${tplBadge}
+        </div>
+        <div class="cl-run-actions">
+          <span class="cl-run-pct${complete ? ' complete' : ''}">${done}/${total} &nbsp;${pct}%</span>
+          <button class="btn-icon danger" onclick="clDeleteRun('${esc(run.id)}')" title="Excluir checklist">✕</button>
+        </div>
+      </div>
+      <div class="cl-progress-bar-wrap">
+        <div class="cl-progress-bar" style="width:${pct}%"></div>
+      </div>
+      <div class="cl-run-items">${items}</div>
+    </div>`;
+      }
+
+      // ─── Toggle item ─────────────────────────────────────
+      async function clToggleItem(runId, itemId) {
+        const run = clState.allRuns.find((r) => r.id === runId);
+        if (!run || !currentUser) return;
+        const item = (run.items || []).find((i) => i.id === itemId);
+        if (!item) return;
+
+        item.done = !item.done;
+        const completedCount = run.items.filter((i) => i.done).length;
+        const complete =
+          completedCount === run.items.length && run.items.length > 0;
+        run.completedCount = completedCount;
+        run.complete = complete;
+
+        // Optimistic UI
+        clRenderToday();
+
+        try {
+          await clRunsRef(currentUser.uid).doc(runId).update({
+            items: run.items,
+            completedCount,
+            complete,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+        } catch (e) {
+          console.error(e);
+          toast('Erro ao salvar item.');
+          // Revert
+          item.done = !item.done;
+          clRenderToday();
+        }
+      }
+
+      // ─── Delete run ──────────────────────────────────────
+      async function clDeleteRun(runId) {
+        if (!confirm('Excluir esta checklist?')) return;
+        if (!currentUser) return;
+        try {
+          await clRunsRef(currentUser.uid).doc(runId).delete();
+          toast('Checklist excluída.');
+        } catch (e) {
+          console.error(e);
+          toast('Erro ao excluir.');
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      // RENDER — Templates
+      // ══════════════════════════════════════════════════════
+      function clRenderTemplates() {
+        const grid = document.getElementById('cl-templates-grid');
+        if (!grid) return;
+        if (!clState.templates.length) {
+          grid.innerHTML = `
+      <div class="cl-empty" style="grid-column:1/-1">
+        <div class="cl-empty-icon">📋</div>
+        <div class="cl-empty-title">Nenhum template ainda</div>
+        <div class="cl-empty-sub">Templates são modelos reutilizáveis para rotinas diárias,<br>inspeções, troubleshooting e muito mais.</div>
+      </div>`;
+          return;
+        }
+        grid.innerHTML = clState.templates
+          .map((tpl) => {
+            const inactive = tpl.active === false;
+            return `
+      <div class="cl-tpl-card${inactive ? ' inactive' : ''}">
+        <div class="cl-tpl-top">
+          <div>
+            <div class="cl-tpl-info">
+              <span class="cl-tpl-name">${esc(tpl.name)}</span>
+              ${inactive ? '<span class="cl-badge cl-badge-off">inativo</span>' : ''}
+            </div>
+            <div class="cl-tpl-count">${(tpl.items || []).length} iten${(tpl.items || []).length !== 1 ? 's' : ''}</div>
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0">
+            <button class="btn-icon" onclick="clEditTemplate('${esc(tpl.id)}')" title="Editar">✏️</button>
+            <button class="btn-icon danger" onclick="clDeleteTemplate('${esc(tpl.id)}')" title="Excluir">✕</button>
+          </div>
+        </div>
+        ${tpl.description ? `<div class="cl-tpl-desc">${esc(tpl.description)}</div>` : ''}
+        <div class="cl-tpl-actions">
+          <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px"
+                  onclick="clUseTemplateToday('${esc(tpl.id)}')"${inactive ? ' disabled title="Template inativo"' : ''}>
+            ▶ Usar hoje
+          </button>
+        </div>
+      </div>`;
+          })
+          .join('');
+      }
+
+      async function clDeleteTemplate(tplId) {
+        if (
+          !confirm(
+            'Excluir este template? Isso não afeta checklists já criadas.',
+          )
+        )
+          return;
+        if (!currentUser) return;
+        try {
+          await clTplRef(currentUser.uid).doc(tplId).delete();
+          toast('Template excluído.');
+        } catch (e) {
+          console.error(e);
+          toast('Erro ao excluir.');
+        }
+      }
+
+      // Criar run a partir de template (a partir do card do template)
+      async function clUseTemplateToday(tplId) {
+        const tpl = clState.templates.find((t) => t.id === tplId);
+        if (!tpl || !currentUser) return;
+        await clCreateRunFromTemplate(tpl, clState.currentDate);
+        if (clState.subTab !== 'today') clSwitchTab('today');
+      }
+
+      async function clCreateRunFromTemplate(tpl, date) {
+        const items = (tpl.items || []).map((item) => ({
+          ...item,
+          done: false,
+        }));
+        try {
+          await clRunsRef(currentUser.uid).add({
+            title: tpl.name,
+            templateId: tpl.id,
+            templateName: tpl.name,
+            date,
+            items,
+            completedCount: 0,
+            totalCount: items.length,
+            complete: false,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+          toast(`✅ "${tpl.name}" adicionada.`);
+        } catch (e) {
+          console.error(e);
+          toast('Erro ao criar checklist.');
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      // RENDER — Métricas
+      // ══════════════════════════════════════════════════════
+      function clSetPeriod(p) {
+        clState.metricsPeriod = p;
+        ['week', 'month', 'year'].forEach((k) =>
+          document
+            .getElementById(`cl-period-${k}`)
+            .classList.toggle('active', k === p),
+        );
+        clRenderMetrics();
+      }
+
+      function clPeriodRange(p) {
+        const now = new Date();
+        const end = clTodayISO();
+        let start;
+        if (p === 'week') {
+          const d = new Date(now);
+          d.setDate(d.getDate() - 6);
+          start = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        } else if (p === 'month') {
+          const d = new Date(now);
+          d.setDate(d.getDate() - 29);
+          start = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        } else {
+          const d = new Date(now);
+          d.setFullYear(d.getFullYear() - 1);
+          start = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+        return { start, end };
+      }
+
+      function clPrevPeriodRange(p) {
+        const now = new Date();
+        let s, e;
+        if (p === 'week') {
+          e = new Date(now);
+          e.setDate(e.getDate() - 7);
+          s = new Date(now);
+          s.setDate(s.getDate() - 13);
+        } else if (p === 'month') {
+          e = new Date(now);
+          e.setDate(e.getDate() - 30);
+          s = new Date(now);
+          s.setDate(s.getDate() - 59);
+        } else {
+          e = new Date(now);
+          e.setFullYear(e.getFullYear() - 1);
+          s = new Date(now);
+          s.setFullYear(s.getFullYear() - 2);
+        }
+        const fmt = (d) =>
+          `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        return { start: fmt(s), end: fmt(e) };
+      }
+
+      function clFilterRuns(start, end) {
+        return clState.allRuns.filter((r) => r.date >= start && r.date <= end);
+      }
+
+      function clMetrics(runs) {
+        const total = runs.length;
+        const completed = runs.filter((r) => r.complete).length;
+        const pct = total ? Math.round((completed / total) * 100) : 0;
+        const avgItems = total
+          ? +(
+              runs.reduce((s, r) => s + (r.completedCount ?? 0), 0) / total
+            ).toFixed(1)
+          : 0;
+        return { total, completed, pct, avgItems };
+      }
+
+      function clRenderMetrics() {
+        const wrap = document.getElementById('cl-metrics-content');
+        if (!wrap) return;
+
+        const { start, end } = clPeriodRange(clState.metricsPeriod);
+        const prev = clPrevPeriodRange(clState.metricsPeriod);
+        const curr = clFilterRuns(start, end);
+        const prevRuns = clFilterRuns(prev.start, prev.end);
+        const m = clMetrics(curr);
+        const mp = clMetrics(prevRuns);
+
+        if (!curr.length) {
+          wrap.innerHTML = `
+      <div class="cl-empty" style="padding-top:32px">
+        <div class="cl-empty-icon">📊</div>
+        <div class="cl-empty-title">Sem dados no período</div>
+        <div class="cl-empty-sub">Crie checklists para ver métricas aqui.</div>
+      </div>`;
+          return;
+        }
+
+        const delta = (cur, pre, suffix = '') => {
+          if (pre === 0) return '';
+          const d = cur - pre,
+            sign = d >= 0 ? '+' : '';
+          return `<span class="cl-delta ${d >= 0 ? 'pos' : 'neg'}">${sign}${d}${suffix} vs período anterior</span>`;
+        };
+
+        const pctClass = m.pct >= 75 ? 'green' : m.pct >= 40 ? 'orange' : 'red';
+
+        const kpis = `
+    <div class="cl-kpi-grid">
+      <div class="cl-kpi-card">
+        <div class="cl-kpi-value">${m.total}</div>
+        <div class="cl-kpi-label">Checklists criadas</div>
+        ${delta(m.total, mp.total)}
+      </div>
+      <div class="cl-kpi-card">
+        <div class="cl-kpi-value green">${m.completed}</div>
+        <div class="cl-kpi-label">Concluídas (100%)</div>
+        ${delta(m.completed, mp.completed)}
+      </div>
+      <div class="cl-kpi-card">
+        <div class="cl-kpi-value ${pctClass}">${m.pct}%</div>
+        <div class="cl-kpi-label">Taxa de conclusão</div>
+        ${delta(m.pct, mp.pct, 'pp')}
+      </div>
+      <div class="cl-kpi-card">
+        <div class="cl-kpi-value orange">${m.avgItems}</div>
+        <div class="cl-kpi-label">Itens concluídos/checklist</div>
+      </div>
+    </div>`;
+
+        const chartHTML = clBuildChart(curr);
+        const breakdown = clBuildBreakdown(curr);
+
+        wrap.innerHTML = kpis + chartHTML + breakdown;
+      }
+
+      function clBuildChart(runs) {
+        const p = clState.metricsPeriod;
+        // Build time-bucketed groups
+        const groups = [];
+
+        if (p === 'week') {
+          const { start, end } = clPeriodRange('week');
+          const d = new Date(start + 'T12:00:00');
+          while (true) {
+            const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            if (iso > end) break;
+            const dayRuns = runs.filter((r) => r.date === iso);
+            groups.push({
+              label: d.toLocaleDateString('pt-BR', {
+                weekday: 'short',
+                day: '2-digit',
+              }),
+              total: dayRuns.length,
+              done: dayRuns.filter((r) => r.complete).length,
+            });
+            d.setDate(d.getDate() + 1);
+          }
+        } else if (p === 'month') {
+          const { start } = clPeriodRange('month');
+          const base = new Date(start + 'T12:00:00');
+          for (let w = 0; w < 4; w++) {
+            const ws = new Date(base);
+            ws.setDate(ws.getDate() + w * 7);
+            const we = new Date(ws);
+            we.setDate(we.getDate() + 6);
+            const wsISO = `${ws.getFullYear()}-${String(ws.getMonth() + 1).padStart(2, '0')}-${String(ws.getDate()).padStart(2, '0')}`;
+            const weISO = `${we.getFullYear()}-${String(we.getMonth() + 1).padStart(2, '0')}-${String(we.getDate()).padStart(2, '0')}`;
+            const wRuns = runs.filter(
+              (r) => r.date >= wsISO && r.date <= weISO,
+            );
+            groups.push({
+              label: ws.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+              }),
+              total: wRuns.length,
+              done: wRuns.filter((r) => r.complete).length,
+            });
+          }
+        } else {
+          // Year: 12 monthly buckets
+          const now = new Date();
+          for (let i = 11; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const ms = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
+            const me = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()}`;
+            const mRuns = runs.filter((r) => r.date >= ms && r.date <= me);
+            groups.push({
+              label: d.toLocaleDateString('pt-BR', { month: 'short' }),
+              total: mRuns.length,
+              done: mRuns.filter((r) => r.complete).length,
+            });
+          }
+        }
+
+        const maxVal = Math.max(...groups.map((g) => g.total), 1);
+        const n = groups.length;
+        const W = 560,
+          H = 130,
+          BOT = 18;
+        const slot = Math.floor(W / n);
+        const barW = Math.max(Math.floor(slot * 0.65), 6);
+        const offset = Math.floor((slot - barW) / 2);
+
+        const rects = groups
+          .map((g, i) => {
+            const x = i * slot + offset;
+            const hT = g.total
+              ? Math.max(Math.round((g.total / maxVal) * (H - BOT - 4)), 3)
+              : 0;
+            const hD = g.done
+              ? Math.max(Math.round((g.done / maxVal) * (H - BOT - 4)), 3)
+              : 0;
+            return `
+      <rect class="cl-bar-total"    x="${x}" y="${H - BOT - hT}" width="${barW}" height="${hT}" rx="2"/>
+      <rect class="cl-bar-complete" x="${x}" y="${H - BOT - hD}" width="${barW}" height="${hD}" rx="2"/>
+      <text class="cl-bar-label"    x="${x + barW / 2}" y="${H - 3}" text-anchor="middle">${g.label}</text>`;
+          })
+          .join('');
+
+        return `
+    <div class="cl-chart-section">
+      <div class="cl-chart-title">Volume de checklists por ${p === 'week' ? 'dia' : p === 'month' ? 'semana' : 'mês'}</div>
+      <div class="cl-chart-wrap">
+        <svg class="cl-chart-svg" viewBox="0 0 ${W} ${H}">${rects}</svg>
+      </div>
+      <div class="cl-chart-legend">
+        <span class="cl-legend-total">■ Total</span>
+        <span class="cl-legend-complete">■ Concluídas</span>
+      </div>
+    </div>`;
+      }
+
+      function clBuildBreakdown(runs) {
+        if (!runs.length) return '';
+        const byTpl = {};
+        runs.forEach((r) => {
+          const k = r.templateName || '— Sem template';
+          if (!byTpl[k]) byTpl[k] = { total: 0, done: 0 };
+          byTpl[k].total++;
+          if (r.complete) byTpl[k].done++;
+        });
+        const rows = Object.entries(byTpl)
+          .sort((a, b) => b[1].total - a[1].total)
+          .slice(0, 10)
+          .map(([name, s]) => {
+            const p = Math.round((s.done / s.total) * 100);
+            return `
+        <div class="cl-breakdown-row">
+          <span>${esc(name)}</span>
+          <div style="display:flex;gap:14px;align-items:center">
+            <span>${s.done}/${s.total}</span>
+            <strong class="${p >= 75 ? 'green' : ''}">${p}%</strong>
+          </div>
+        </div>`;
+          })
+          .join('');
+        return `
+    <div class="cl-chart-section" style="padding:0">
+      <div style="padding:16px 20px 10px;font-size:12.5px;font-weight:500;color:var(--muted)">Por template</div>
+      <div class="cl-breakdown">${rows}</div>
+    </div>`;
+      }
+
+      // ══════════════════════════════════════════════════════
+      // MODALS — Nova checklist (run)
+      // ══════════════════════════════════════════════════════
+      function clOpenNewRunModal() {
+        const bd = clMakeBackdrop();
+        bd.innerHTML = `
+    <div class="modal modal-cl" role="dialog" aria-modal="true">
+      <h2>Nova Checklist</h2>
+      <div class="field" style="margin-bottom:12px">
+        <label class="detail-label">Título</label>
+        <input type="text" id="clr-title" placeholder="Ex: Inspeção diária" autocomplete="off" />
+      </div>
+      <div class="field" style="margin-bottom:12px">
+        <label class="detail-label">Data</label>
+        <input type="date" id="clr-date" value="${clState.currentDate}" />
+      </div>
+      <div class="field" style="margin-bottom:8px">
+        <label class="detail-label" style="margin-bottom:6px;display:block">Itens</label>
+        <div id="clr-items" class="cl-modal-items">
+          ${clItemRow(uid_())}
+        </div>
+        <button class="btn btn-ghost" style="margin-top:8px;font-size:12px;padding:5px 12px"
+                onclick="clAddRow('clr-items')">+ Adicionar item</button>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost"    onclick="this.closest('.modal-backdrop').remove()">Cancelar</button>
+        <button class="btn btn-primary" id="clr-save-btn" onclick="clSaveNewRun()">Criar</button>
+      </div>
+    </div>`;
+        document.body.appendChild(bd);
+        document.getElementById('clr-title').focus();
+        bd.addEventListener('click', (e) => {
+          if (e.target === bd) bd.remove();
+        });
+        bd.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') bd.remove();
+        });
+      }
+
+      function clOpenFromTemplateModal() {
+        const active = clState.templates.filter((t) => t.active !== false);
+        if (!active.length) {
+          toast('Crie um template primeiro.');
+          clSwitchTab('templates');
+          return;
+        }
+
+        const bd = clMakeBackdrop();
+        bd.innerHTML = `
+    <div class="modal modal-cl" role="dialog" aria-modal="true">
+      <h2>Usar template</h2>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px">Escolha um template para criar a checklist de hoje.</p>
+      <div id="cl-from-tpl-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div class="modal-actions" style="margin-top:16px">
+        <button class="btn btn-ghost" onclick="this.closest('.modal-backdrop').remove()">Cancelar</button>
+      </div>
+    </div>`;
+        document.body.appendChild(bd);
+
+        // Monta os itens via DOM — sem serializar dados em atributos HTML
+        const list = bd.querySelector('#cl-from-tpl-list');
+        active.forEach((t) => {
+          const row = document.createElement('div');
+          row.className = 'cl-modal-item-row';
+          row.style.cssText =
+            'cursor:pointer;padding:10px 14px;transition:background .12s';
+          row.innerHTML = `
+      <div style="flex:1">
+        <div style="font-size:13.5px;font-weight:500;color:var(--text)">${esc(t.name)}</div>
+        ${t.description ? `<div style="font-size:12px;color:var(--muted);margin-top:3px">${esc(t.description)}</div>` : ''}
+        <div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);margin-top:4px">${(t.items || []).length} iten${(t.items || []).length !== 1 ? 's' : ''}</div>
+      </div>
+      <span style="color:var(--muted);font-size:18px;flex-shrink:0">›</span>`;
+          row.addEventListener(
+            'mouseenter',
+            () => (row.style.background = 'rgba(255,255,255,.05)'),
+          );
+          row.addEventListener('mouseleave', () => (row.style.background = ''));
+          row.addEventListener('click', async () => {
+            // Busca o template direto do state — sem passar dados pelo HTML
+            const tpl = clState.templates.find((x) => x.id === t.id);
+            if (!tpl) return;
+            await clCreateRunFromTemplate(tpl, clState.currentDate);
+            bd.remove();
+          });
+          list.appendChild(row);
+        });
+
+        bd.addEventListener('click', (e) => {
+          if (e.target === bd) bd.remove();
+        });
+        bd.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') bd.remove();
+        });
+      }
+
+      async function clSaveNewRun() {
+        const title = document.getElementById('clr-title').value.trim();
+        const date = document.getElementById('clr-date').value;
+        if (!title) {
+          document.getElementById('clr-title').focus();
+          return;
+        }
+        if (!date) {
+          toast('Escolha uma data.');
+          return;
+        }
+        if (!currentUser) return;
+
+        const items = clCollectRows('clr-items');
+        if (!items.length) {
+          toast('Adicione pelo menos um item.');
+          return;
+        }
+
+        const btn = document.getElementById('clr-save-btn');
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = 'Salvando…';
+        }
+
+        try {
+          await clRunsRef(currentUser.uid).add({
+            title,
+            date,
+            items,
+            templateId: null,
+            templateName: null,
+            completedCount: 0,
+            totalCount: items.length,
+            complete: false,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+          document.querySelector('.modal-backdrop')?.remove();
+          if (date !== clState.currentDate) clSetDate(date);
+          toast('✅ Checklist criada!');
+        } catch (e) {
+          console.error(e);
+          toast('Erro ao criar checklist.');
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Criar';
+          }
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      // MODALS — Template (novo e edição)
+      // ══════════════════════════════════════════════════════
+      function clOpenNewTemplateModal(tplId = null) {
+        const tpl = tplId
+          ? clState.templates.find((t) => t.id === tplId)
+          : null;
+        const bd = clMakeBackdrop();
+        const defaultItems = tpl
+          ? tpl.items || []
+          : [{ id: uid_(), text: '', order: 0 }];
+
+        bd.innerHTML = `
+    <div class="modal modal-cl" role="dialog" aria-modal="true">
+      <h2>${tpl ? 'Editar Template' : 'Novo Template'}</h2>
+      <div class="field" style="margin-bottom:12px">
+        <label class="detail-label">Nome</label>
+        <input type="text" id="clt-name" placeholder="Ex: Rotina de abertura" value="${tpl ? esc(tpl.name) : ''}" />
+      </div>
+      <div class="field" style="margin-bottom:12px">
+        <label class="detail-label">Descrição (opcional)</label>
+        <input type="text" id="clt-desc" placeholder="Para que serve este template?" value="${tpl ? esc(tpl.description || '') : ''}" />
+      </div>
+      <div class="cl-tpl-active-row" style="margin-bottom:16px">
+        <span class="detail-label">Status</span>
+        <label class="cl-toggle-wrap">
+          <input type="checkbox" id="clt-active" ${!tpl || tpl.active !== false ? 'checked' : ''} />
+          <span class="cl-toggle-track"></span>
+          <span class="cl-toggle-label">Ativo</span>
+        </label>
+      </div>
+      <div class="field" style="margin-bottom:8px">
+        <label class="detail-label" style="margin-bottom:6px;display:block">Itens</label>
+        <div id="clt-items" class="cl-modal-items">
+          ${defaultItems.map((item) => clItemRow(item.id, item.text)).join('')}
+        </div>
+        <button class="btn btn-ghost" style="margin-top:8px;font-size:12px;padding:5px 12px"
+                onclick="clAddRow('clt-items')">+ Adicionar item</button>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost"    onclick="this.closest('.modal-backdrop').remove()">Cancelar</button>
+        <button class="btn btn-primary" id="clt-save-btn"
+                onclick="clSaveTemplate('${tplId || ''}')">
+          ${tpl ? 'Salvar alterações' : 'Criar template'}
+        </button>
+      </div>
+    </div>`;
+        document.body.appendChild(bd);
+        document.getElementById('clt-name').focus();
+        bd.addEventListener('click', (e) => {
+          if (e.target === bd) bd.remove();
+        });
+        bd.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') bd.remove();
+        });
+      }
+
+      function clEditTemplate(tplId) {
+        clOpenNewTemplateModal(tplId);
+      }
+
+      async function clSaveTemplate(tplId) {
+        const name = document.getElementById('clt-name').value.trim();
+        const desc = document.getElementById('clt-desc').value.trim();
+        const active = document.getElementById('clt-active').checked;
+        if (!name) {
+          document.getElementById('clt-name').focus();
+          return;
+        }
+        if (!currentUser) return;
+
+        const items = clCollectRows('clt-items');
+        if (!items.length) {
+          toast('Adicione pelo menos um item.');
+          return;
+        }
+
+        const btn = document.getElementById('clt-save-btn');
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = 'Salvando…';
+        }
+
+        const data = {
+          name,
+          description: desc,
+          active,
+          items,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+        try {
+          if (tplId) {
+            await clTplRef(currentUser.uid).doc(tplId).update(data);
+            toast('Template atualizado!');
+          } else {
+            data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            await clTplRef(currentUser.uid).add(data);
+            toast('✅ Template criado!');
+          }
+          document.querySelector('.modal-backdrop')?.remove();
+        } catch (e) {
+          console.error(e);
+          toast('Erro ao salvar template.');
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = tplId ? 'Salvar alterações' : 'Criar template';
+          }
+        }
+      }
+
+      // ─── Modal helpers ───────────────────────────────────
+      function clMakeBackdrop() {
+        const bd = document.createElement('div');
+        bd.className = 'modal-backdrop';
+        return bd;
+      }
+
+      function clItemRow(id, value = '') {
+        return `
+    <div class="cl-modal-item-row" data-item-id="${id}">
+      <span style="color:var(--muted);font-size:11px;cursor:default;flex-shrink:0">☰</span>
+      <input class="cl-modal-item-input" type="text" placeholder="Descrição do item…"
+             value="${esc(value)}" data-item-id="${id}"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();this.closest('.cl-modal-items').parentElement.querySelector('button[onclick*=clAddRow]').click()}" />
+      <button class="btn-icon danger" title="Remover item"
+              onclick="this.closest('.cl-modal-item-row').remove()">✕</button>
+    </div>`;
+      }
+
+      function clAddRow(containerId) {
+        const c = document.getElementById(containerId);
+        const d = document.createElement('div');
+        d.innerHTML = clItemRow(uid_());
+        c.appendChild(d.firstElementChild);
+        c.lastElementChild.querySelector('.cl-modal-item-input').focus();
+      }
+
+      function clCollectRows(containerId) {
+        return Array.from(
+          document
+            .getElementById(containerId)
+            .querySelectorAll('.cl-modal-item-input'),
+        )
+          .map((inp, idx) => ({
+            id: inp.dataset.itemId || uid_(),
+            text: inp.value.trim(),
+            order: idx,
+            done: false,
+          }))
+          .filter((i) => i.text.length > 0);
+      }
 
       window.addEventListener('online', () => {
         if (currentUser) setPill('synced');
