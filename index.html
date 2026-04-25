@@ -1623,6 +1623,9 @@
         .header-center {
           display: none;
         }
+        .header-nav {
+          display: none;
+        }
         #user-email-label {
           display: none;
         }
@@ -1638,6 +1641,66 @@
         .generate-form .btn-generate {
           grid-column: 1/-1;
           justify-content: center;
+        }
+        #view-app {
+          padding-bottom: 68px;
+        }
+      }
+
+      /* ── Bottom Nav (apenas mobile portrait) ─────────────── */
+      #bottom-nav {
+        display: none;
+      }
+      @media (max-width: 640px) {
+        #bottom-nav {
+          display: flex;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 60px;
+          background: var(--surface2);
+          border-top: 1px solid var(--border);
+          z-index: 200;
+          padding: 0 4px;
+          padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        .bn-tab {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 3px;
+          border: none;
+          background: transparent;
+          color: var(--muted);
+          font-family: 'DM Sans', sans-serif;
+          font-size: 10px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: color 0.15s;
+          padding: 6px 4px;
+          border-radius: 10px;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .bn-tab .bn-icon {
+          font-size: 22px;
+          line-height: 1;
+          transition: transform 0.15s;
+        }
+        .bn-tab.active {
+          color: var(--text);
+        }
+        .bn-tab.active .bn-icon {
+          transform: translateY(-2px);
+        }
+        .bn-tab.admin-tab {
+          color: var(--admin);
+          opacity: 0.7;
+        }
+        .bn-tab.admin-tab.active {
+          opacity: 1;
         }
       }
       @media (min-width: 641px) and (max-width: 900px) {
@@ -2849,6 +2912,34 @@
         <!-- /cl-panel-inner -->
       </div>
       <!-- /panel-checklist -->
+      <!-- ── Bottom Navigation (mobile only) ───────────────── -->
+      <nav id="bottom-nav">
+        <button
+          class="bn-tab active"
+          id="bn-board"
+          onclick="switchPanel('board')"
+        >
+          <span class="bn-icon">📋</span>
+          <span>Tarefas</span>
+        </button>
+        <button
+          class="bn-tab"
+          id="bn-checklist"
+          onclick="switchPanel('checklist')"
+        >
+          <span class="bn-icon">✅</span>
+          <span>Checklists</span>
+        </button>
+        <button
+          class="bn-tab admin-tab"
+          id="bn-admin"
+          onclick="switchPanel('admin')"
+          style="display: none"
+        >
+          <span class="bn-icon">🛡️</span>
+          <span>Admin</span>
+        </button>
+      </nav>
     </div>
     <!-- /view-app -->
 
@@ -4164,6 +4255,7 @@
         document
           .getElementById('panel-checklist')
           .classList.toggle('active', panel === 'checklist');
+        // top nav (desktop)
         document
           .getElementById('nav-board')
           .classList.toggle('active', panel === 'board');
@@ -4173,6 +4265,15 @@
         document
           .getElementById('nav-checklist')
           .classList.toggle('active', panel === 'checklist');
+        // bottom nav (mobile)
+        document
+          .getElementById('bn-board')
+          .classList.toggle('active', panel === 'board');
+        document
+          .getElementById('bn-checklist')
+          .classList.toggle('active', panel === 'checklist');
+        const bnAdmin = document.getElementById('bn-admin');
+        if (bnAdmin) bnAdmin.classList.toggle('active', panel === 'admin');
         document.getElementById('btn-add-bucket').style.display =
           panel === 'board' ? '' : 'none';
         if (panel === 'admin') {
@@ -4268,6 +4369,9 @@
         document.getElementById('nav-admin').style.display = isAdmin
           ? ''
           : 'none';
+        document.getElementById('bn-admin').style.display = isAdmin
+          ? ''
+          : 'none';
 
         // Inicializa o delay selecionado no botão correto
         const saved = parseInt(localStorage.getItem(LS_DELAY)) || 3000;
@@ -4291,6 +4395,7 @@
         clDestroy();
         document.getElementById('codes-output').classList.remove('visible');
         document.getElementById('nav-admin').style.display = 'none';
+        document.getElementById('bn-admin').style.display = 'none';
         document.getElementById('signup-steps').classList.remove('visible');
         switchPanel('board');
         showView('view-auth');
