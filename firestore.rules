@@ -52,6 +52,23 @@ service cloud.firestore {
           && d.active is bool;
     }
 
+    function validTrMetric() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['name', 'fields', 'active', 'updatedAt'])
+          && d.name   is string && d.name.size() > 0 && d.name.size() <= 100
+          && d.fields is list   && d.fields.size() > 0 && d.fields.size() <= 20
+          && d.active is bool;
+    }
+
+    function validTrEntry() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['metricId', 'metricName', 'values', 'recordedAt', 'createdAt'])
+          && d.metricId   is string && d.metricId.size() > 0
+          && d.metricName is string
+          && d.values     is list   && d.values.size() > 0 && d.values.size() <= 20
+          && d.recordedAt is timestamp;
+    }
+
     // Criação de run (exige campos obrigatórios)
     function validClRun() {
       let d = request.resource.data;
@@ -136,11 +153,28 @@ service cloud.firestore {
       }
 
       // ── /users/{uid}/clRuns/{runId} ────────────────────────
-      // Execuções diárias de checklist — uso exclusivo do dono
       match /clRuns/{runId} {
         allow read:   if isOwner(uid);
         allow create: if isOwner(uid) && validClRun();
         allow update: if isOwner(uid) && validClRunUpdate();
+        allow delete: if isOwner(uid);
+      }
+
+      // ── /users/{uid}/trMetrics/{metId} ───────────────────
+      // Tipos de medida — uso exclusivo do dono
+      match /trMetrics/{metId} {
+        allow read:   if isOwner(uid);
+        allow create: if isOwner(uid) && validTrMetric();
+        allow update: if isOwner(uid) && validTrMetric();
+        allow delete: if isOwner(uid);
+      }
+
+      // ── /users/{uid}/trEntries/{entId} ───────────────────
+      // Registros de medidas — uso exclusivo do dono
+      match /trEntries/{entId} {
+        allow read:   if isOwner(uid);
+        allow create: if isOwner(uid) && validTrEntry();
+        allow update: if isOwner(uid) && validTrEntry();
         allow delete: if isOwner(uid);
       }
     }

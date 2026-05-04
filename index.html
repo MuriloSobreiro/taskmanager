@@ -2320,6 +2320,389 @@
           grid-template-columns: 1fr;
         }
       }
+
+      /* ════════════════════════════════════════════════
+       TRACKING MODULE
+    ════════════════════════════════════════════════ */
+      #panel-tracking {
+        flex: 1;
+        display: none;
+      }
+      #panel-tracking.active {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .tr-panel-inner {
+        display: flex;
+        flex-direction: column;
+        padding: var(--pad);
+        gap: 16px;
+        max-width: 900px;
+        width: 100%;
+        margin: 0 auto;
+        overflow-y: auto;
+        flex: 1;
+      }
+
+      /* Subnav */
+      .tr-subnav {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 5px;
+        flex-shrink: 0;
+      }
+      .tr-subnav-tab {
+        flex: 1;
+        min-width: 80px;
+        background: none;
+        border: none;
+        border-radius: 8px;
+        color: var(--muted);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 7px 14px;
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+      .tr-subnav-tab.active {
+        background: var(--surface);
+        color: var(--text);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      }
+      .tr-subpanel {
+        display: none;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .tr-subpanel.active {
+        display: flex;
+      }
+
+      /* Toolbar */
+      .tr-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .tr-section-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+      }
+
+      /* Metrics grid (types list) */
+      .tr-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 12px;
+      }
+      .tr-metric-card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        transition: border-color 0.15s;
+      }
+      .tr-metric-card:hover {
+        border-color: var(--accent4);
+      }
+      .tr-metric-card.inactive {
+        opacity: 0.5;
+      }
+      .tr-metric-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .tr-metric-name {
+        font-weight: 600;
+        font-size: 13.5px;
+        color: var(--text);
+      }
+      .tr-metric-unit {
+        font-size: 11px;
+        font-family: 'DM Mono', monospace;
+        color: var(--accent4);
+        margin-top: 2px;
+      }
+      .tr-metric-desc {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .tr-metric-fields {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 2px;
+      }
+      .tr-field-chip {
+        font-size: 10.5px;
+        font-family: 'DM Mono', monospace;
+        background: rgba(96, 165, 250, 0.12);
+        color: var(--accent4);
+        border-radius: 6px;
+        padding: 2px 8px;
+      }
+      .tr-metric-actions {
+        display: flex;
+        gap: 4px;
+        flex-shrink: 0;
+      }
+
+      /* Entries table */
+      .tr-table-wrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .tr-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      .tr-table th {
+        background: var(--surface2);
+        color: var(--muted);
+        font-family: 'DM Mono', monospace;
+        font-size: 10.5px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 10px 14px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+      }
+      .tr-table td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+      }
+      .tr-table tr:last-child td {
+        border-bottom: none;
+      }
+      .tr-table tr:hover td {
+        background: rgba(255, 255, 255, 0.025);
+      }
+      .tr-table .tr-val {
+        font-family: 'DM Mono', monospace;
+        font-size: 12.5px;
+        color: var(--accent4);
+      }
+      .tr-table .tr-date {
+        font-family: 'DM Mono', monospace;
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+
+      /* Chart */
+      .tr-chart-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+      }
+      .tr-chart-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .tr-chart-title {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted);
+      }
+      .tr-chart-svg {
+        width: 100%;
+        height: 220px;
+        display: block;
+        overflow: visible;
+      }
+      .tr-line {
+        fill: none;
+        stroke-width: 2;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+      }
+      .tr-dot {
+        r: 3.5;
+      }
+      .tr-dot:hover {
+        r: 5;
+      }
+      .tr-grid-line {
+        stroke: var(--border);
+        stroke-width: 1;
+      }
+      .tr-axis-label {
+        font-size: 9.5px;
+        fill: var(--muted);
+        font-family: 'DM Mono', monospace;
+      }
+      .tr-chart-legend {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .tr-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-family: 'DM Mono', monospace;
+        color: var(--muted);
+      }
+      .tr-legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .tr-chart-empty {
+        text-align: center;
+        padding: 40px 16px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      /* Period & filter bar */
+      .tr-filter-bar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .tr-period-tabs {
+        display: flex;
+        gap: 4px;
+      }
+      .tr-period-btn {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        color: var(--muted);
+        font-size: 12px;
+        font-family: 'DM Mono', monospace;
+        padding: 5px 12px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .tr-period-btn.active {
+        background: var(--surface2);
+        color: var(--text);
+        border-color: var(--accent4);
+      }
+      .tr-select {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        color: var(--text);
+        font-size: 12.5px;
+        font-family: 'DM Sans', sans-serif;
+        padding: 5px 10px;
+        cursor: pointer;
+        outline: none;
+      }
+      .tr-view-toggle {
+        display: flex;
+        gap: 4px;
+      }
+      .tr-view-btn {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        color: var(--muted);
+        font-size: 14px;
+        padding: 5px 10px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .tr-view-btn.active {
+        background: var(--surface2);
+        color: var(--text);
+        border-color: var(--accent4);
+      }
+
+      /* Modal fields */
+      .tr-fields-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .tr-field-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 10px;
+      }
+      .tr-field-row input {
+        flex: 1;
+        min-width: 0;
+      }
+      .tr-field-row input.field-unit {
+        max-width: 80px;
+      }
+
+      /* Entry value inputs */
+      .tr-entry-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .tr-entry-field label {
+        font-size: 11.5px;
+        color: var(--muted);
+        font-family: 'DM Mono', monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .tr-entry-field input {
+        width: 100%;
+      }
+      .tr-entry-field .tr-unit-hint {
+        font-size: 11px;
+        color: var(--accent4);
+        font-family: 'DM Mono', monospace;
+      }
+
+      /* Responsive */
+      @media (max-width: 640px) {
+        .tr-metrics-grid {
+          grid-template-columns: 1fr;
+        }
+        .tr-filter-bar {
+          gap: 8px;
+        }
+        .tr-chart-svg {
+          height: 180px;
+        }
+        .tr-toolbar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
     </style>
   </head>
   <body>
@@ -2467,6 +2850,13 @@
               onclick="switchPanel('checklist')"
             >
               ✅ Checklists
+            </button>
+            <button
+              class="nav-tab"
+              id="nav-tracking"
+              onclick="switchPanel('tracking')"
+            >
+              📈 Medidas
             </button>
             <button
               class="nav-tab admin-tab"
@@ -2912,6 +3302,138 @@
         <!-- /cl-panel-inner -->
       </div>
       <!-- /panel-checklist -->
+
+      <!-- ════════════════════════════════════════════════
+       TRACKING PANEL
+  ════════════════════════════════════════════════ -->
+      <div id="panel-tracking">
+        <div class="tr-panel-inner">
+          <!-- Sub-nav -->
+          <nav class="tr-subnav">
+            <button
+              class="tr-subnav-tab active"
+              id="tr-tab-log"
+              onclick="trSwitchTab('log')"
+            >
+              📝 Registrar
+            </button>
+            <button
+              class="tr-subnav-tab"
+              id="tr-tab-history"
+              onclick="trSwitchTab('history')"
+            >
+              📊 Histórico
+            </button>
+            <button
+              class="tr-subnav-tab"
+              id="tr-tab-types"
+              onclick="trSwitchTab('types')"
+            >
+              ⚙️ Medidas
+            </button>
+          </nav>
+
+          <!-- ── LOG (quick entry) ────────────────── -->
+          <div
+            id="tr-sub-log"
+            class="tr-subpanel active"
+          >
+            <div class="tr-toolbar">
+              <span class="tr-section-title">Novo registro</span>
+            </div>
+            <div id="tr-log-form-wrap"></div>
+          </div>
+
+          <!-- ── HISTORY ──────────────────────────── -->
+          <div
+            id="tr-sub-history"
+            class="tr-subpanel"
+          >
+            <div class="tr-filter-bar">
+              <select
+                id="tr-hist-metric"
+                class="tr-select"
+                onchange="trRenderHistory()"
+              >
+                <option value="">Todas as medidas</option>
+              </select>
+              <div class="tr-period-tabs">
+                <button
+                  class="tr-period-btn active"
+                  id="tr-hp-week"
+                  onclick="trSetHistPeriod('week')"
+                >
+                  7d
+                </button>
+                <button
+                  class="tr-period-btn"
+                  id="tr-hp-month"
+                  onclick="trSetHistPeriod('month')"
+                >
+                  30d
+                </button>
+                <button
+                  class="tr-period-btn"
+                  id="tr-hp-3m"
+                  onclick="trSetHistPeriod('3m')"
+                >
+                  90d
+                </button>
+                <button
+                  class="tr-period-btn"
+                  id="tr-hp-all"
+                  onclick="trSetHistPeriod('all')"
+                >
+                  Tudo
+                </button>
+              </div>
+              <div class="tr-view-toggle">
+                <button
+                  class="tr-view-btn active"
+                  id="tr-view-chart"
+                  onclick="trSetView('chart')"
+                  title="Gráfico"
+                >
+                  📈
+                </button>
+                <button
+                  class="tr-view-btn"
+                  id="tr-view-table"
+                  onclick="trSetView('table')"
+                  title="Tabela"
+                >
+                  ☰
+                </button>
+              </div>
+            </div>
+            <div id="tr-history-content"></div>
+          </div>
+
+          <!-- ── TYPES (metric definitions) ──────── -->
+          <div
+            id="tr-sub-types"
+            class="tr-subpanel"
+          >
+            <div class="tr-toolbar">
+              <span class="tr-section-title">Tipos de medida</span>
+              <button
+                class="btn btn-primary"
+                onclick="trOpenMetricModal()"
+              >
+                + Nova medida
+              </button>
+            </div>
+            <div
+              id="tr-types-grid"
+              class="tr-metrics-grid"
+            >
+              <div class="cl-loading">Carregando…</div>
+            </div>
+          </div>
+        </div>
+        <!-- /tr-panel-inner -->
+      </div>
+      <!-- /panel-tracking -->
       <!-- ── Bottom Navigation (mobile only) ───────────────── -->
       <nav id="bottom-nav">
         <button
@@ -2929,6 +3451,14 @@
         >
           <span class="bn-icon">✅</span>
           <span>Checklists</span>
+        </button>
+        <button
+          class="bn-tab"
+          id="bn-tracking"
+          onclick="switchPanel('tracking')"
+        >
+          <span class="bn-icon">📈</span>
+          <span>Medidas</span>
         </button>
         <button
           class="bn-tab admin-tab"
@@ -4246,34 +4776,17 @@
       // 9. PANEL SWITCHER
       // ══════════════════════════════════════════════════════
       function switchPanel(panel) {
-        document
-          .getElementById('panel-board')
-          .classList.toggle('active', panel === 'board');
-        document
-          .getElementById('panel-admin')
-          .classList.toggle('active', panel === 'admin');
-        document
-          .getElementById('panel-checklist')
-          .classList.toggle('active', panel === 'checklist');
-        // top nav (desktop)
-        document
-          .getElementById('nav-board')
-          .classList.toggle('active', panel === 'board');
-        document
-          .getElementById('nav-admin')
-          .classList.toggle('active', panel === 'admin');
-        document
-          .getElementById('nav-checklist')
-          .classList.toggle('active', panel === 'checklist');
-        // bottom nav (mobile)
-        document
-          .getElementById('bn-board')
-          .classList.toggle('active', panel === 'board');
-        document
-          .getElementById('bn-checklist')
-          .classList.toggle('active', panel === 'checklist');
-        const bnAdmin = document.getElementById('bn-admin');
-        if (bnAdmin) bnAdmin.classList.toggle('active', panel === 'admin');
+        ['board', 'admin', 'checklist', 'tracking'].forEach((p) => {
+          document
+            .getElementById('panel-' + p)
+            ?.classList.toggle('active', p === panel);
+          document
+            .getElementById('nav-' + p)
+            ?.classList.toggle('active', p === panel);
+          document
+            .getElementById('bn-' + p)
+            ?.classList.toggle('active', p === panel);
+        });
         document.getElementById('btn-add-bucket').style.display =
           panel === 'board' ? '' : 'none';
         if (panel === 'admin') {
@@ -4282,6 +4795,9 @@
         }
         if (panel === 'checklist') {
           clOnPanelEnter();
+        }
+        if (panel === 'tracking') {
+          trOnPanelEnter();
         }
       }
 
@@ -4387,12 +4903,14 @@
         setAuthBusy(false);
         startDBListener(user.uid);
         clInit(user.uid);
+        trInit(user.uid);
       }
 
       function onLoggedOut() {
         state.buckets = [];
         _lastCodes = [];
         clDestroy();
+        trDestroy();
         document.getElementById('codes-output').classList.remove('visible');
         document.getElementById('nav-admin').style.display = 'none';
         document.getElementById('bn-admin').style.display = 'none';
@@ -5316,6 +5834,864 @@
             done: false,
           }))
           .filter((i) => i.text.length > 0);
+      }
+
+      // ══════════════════════════════════════════════════════
+      // TRACKING MODULE
+      // Collections:
+      //   users/{uid}/trMetrics  — tipos de medida
+      //   users/{uid}/trEntries  — registros
+      // ══════════════════════════════════════════════════════
+
+      // ─── State ───────────────────────────────────────────
+      const trState = {
+        metrics: [], // tipos de medida
+        entries: [], // todos os registros do listener
+        subTab: 'log',
+        histPeriod: 'week',
+        histView: 'chart',
+        histMetricId: '',
+        listenersStarted: false,
+      };
+      const CHART_COLORS = [
+        '#60a5fa',
+        '#4ecdc4',
+        '#a78bfa',
+        '#ffa94d',
+        '#f472b6',
+        '#34d399',
+        '#fb923c',
+        '#ff6b6b',
+      ];
+      let _unsubTrMetrics = null;
+      let _unsubTrEntries = null;
+
+      // ─── Refs ─────────────────────────────────────────────
+      const trMetRef = (uid) =>
+        db.collection('users').doc(uid).collection('trMetrics');
+      const trEntRef = (uid) =>
+        db.collection('users').doc(uid).collection('trEntries');
+
+      // ─── Helpers ──────────────────────────────────────────
+      function trNow() {
+        const d = new Date();
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
+      function trFmtDate(ts) {
+        if (!ts) return '—';
+        const d = ts.toDate ? ts.toDate() : new Date(ts);
+        return (
+          d.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          }) +
+          ' ' +
+          d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+        );
+      }
+      function trFmtShort(ts) {
+        if (!ts) return '';
+        const d = ts.toDate ? ts.toDate() : new Date(ts);
+        return d.toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+        });
+      }
+      function trDateISO(ts) {
+        if (!ts) return '';
+        const d = ts.toDate ? ts.toDate() : new Date(ts);
+        return d.toISOString().slice(0, 10);
+      }
+      function trDateFromISO(iso) {
+        return new Date(iso + 'T12:00:00');
+      }
+
+      // ─── Init / Destroy ───────────────────────────────────
+      function trInit(uid) {
+        if (trState.listenersStarted) return;
+
+        _unsubTrMetrics = trMetRef(uid)
+          .orderBy('createdAt', 'asc')
+          .onSnapshot(
+            (snap) => {
+              trState.metrics = snap.docs.map((d) => ({
+                id: d.id,
+                ...d.data(),
+              }));
+              if (trState.subTab === 'types') trRenderTypes();
+              if (trState.subTab === 'log') trRenderLogForm();
+              trPopulateHistSelect();
+              if (trState.subTab === 'history') trRenderHistory();
+            },
+            (err) => console.error('trMetrics:', err),
+          );
+
+        // Entries: último ano — suficiente para todos os períodos
+        const sinceDate = new Date();
+        sinceDate.setFullYear(sinceDate.getFullYear() - 1);
+        _unsubTrEntries = trEntRef(uid)
+          .where('recordedAt', '>=', sinceDate)
+          .orderBy('recordedAt', 'desc')
+          .onSnapshot(
+            (snap) => {
+              trState.entries = snap.docs.map((d) => ({
+                id: d.id,
+                ...d.data(),
+              }));
+              if (trState.subTab === 'history') trRenderHistory();
+            },
+            (err) => console.error('trEntries:', err),
+          );
+
+        trState.listenersStarted = true;
+      }
+
+      function trDestroy() {
+        if (_unsubTrMetrics) {
+          _unsubTrMetrics();
+          _unsubTrMetrics = null;
+        }
+        if (_unsubTrEntries) {
+          _unsubTrEntries();
+          _unsubTrEntries = null;
+        }
+        trState.metrics = [];
+        trState.entries = [];
+        trState.listenersStarted = false;
+        trState.subTab = 'log';
+        ['log', 'history', 'types'].forEach((t) => {
+          document
+            .getElementById(`tr-tab-${t}`)
+            ?.classList.toggle('active', t === 'log');
+          document
+            .getElementById(`tr-sub-${t}`)
+            ?.classList.toggle('active', t === 'log');
+        });
+      }
+
+      function trOnPanelEnter() {
+        if (trState.subTab === 'log') trRenderLogForm();
+        if (trState.subTab === 'types') trRenderTypes();
+        if (trState.subTab === 'history') trRenderHistory();
+      }
+
+      // ─── Sub-tab ──────────────────────────────────────────
+      function trSwitchTab(tab) {
+        trState.subTab = tab;
+        ['log', 'history', 'types'].forEach((t) => {
+          document
+            .getElementById(`tr-tab-${t}`)
+            .classList.toggle('active', t === tab);
+          document
+            .getElementById(`tr-sub-${t}`)
+            .classList.toggle('active', t === tab);
+        });
+        if (tab === 'log') trRenderLogForm();
+        if (tab === 'types') trRenderTypes();
+        if (tab === 'history') {
+          trPopulateHistSelect();
+          trRenderHistory();
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      // LOG FORM
+      // ══════════════════════════════════════════════════════
+      function trRenderLogForm() {
+        const wrap = document.getElementById('tr-log-form-wrap');
+        if (!wrap) return;
+        const active = trState.metrics.filter((m) => m.active !== false);
+
+        if (!active.length) {
+          wrap.innerHTML = `
+      <div class="cl-empty">
+        <div class="cl-empty-icon">📏</div>
+        <div class="cl-empty-title">Nenhuma medida cadastrada</div>
+        <div class="cl-empty-sub">Crie um tipo de medida na aba <strong>Medidas</strong> para começar a registrar.</div>
+      </div>`;
+          return;
+        }
+
+        // Build select + dynamic value fields
+        wrap.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="field">
+        <label class="detail-label">Medida</label>
+        <select id="tr-log-metric-sel" class="tr-select" style="width:100%;padding:9px 12px;font-size:14px"
+                onchange="trUpdateLogFields()">
+          <option value="">Selecione…</option>
+          ${active.map((m) => `<option value="${esc(m.id)}">${esc(m.name)}${m.fields && m.fields.length > 1 ? ' (composta)' : ''}</option>`).join('')}
+        </select>
+      </div>
+      <div id="tr-log-fields"></div>
+      <div class="field">
+        <label class="detail-label">Data e hora do registro</label>
+        <input type="datetime-local" id="tr-log-datetime" value="${trNow()}"
+               style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 12px;font-size:14px;outline:none" />
+      </div>
+      <div class="field">
+        <label class="detail-label">Observação (opcional)</label>
+        <input type="text" id="tr-log-note" placeholder="Ex: após treino, em jejum…"
+               style="width:100%" />
+      </div>
+      <button class="btn btn-primary" onclick="trSaveEntry()" style="align-self:flex-start;padding:10px 28px">
+        Salvar registro
+      </button>
+    </div>`;
+      }
+
+      function trUpdateLogFields() {
+        const sel = document.getElementById('tr-log-metric-sel');
+        const metId = sel?.value;
+        const wrap = document.getElementById('tr-log-fields');
+        if (!wrap) return;
+        if (!metId) {
+          wrap.innerHTML = '';
+          return;
+        }
+        const metric = trState.metrics.find((m) => m.id === metId);
+        if (!metric) {
+          wrap.innerHTML = '';
+          return;
+        }
+
+        wrap.innerHTML = (
+          metric.fields || [
+            { id: 'value', label: metric.name, unit: metric.unit },
+          ]
+        )
+          .map(
+            (f) => `
+      <div class="tr-entry-field">
+        <label>${esc(f.label)}${f.unit ? ` <span class="tr-unit-hint">(${esc(f.unit)})</span>` : ''}</label>
+        <input type="number" step="any" id="tr-log-val-${esc(f.id)}"
+               placeholder="0" style="width:100%" />
+      </div>`,
+          )
+          .join('');
+      }
+
+      async function trSaveEntry() {
+        const metId = document.getElementById('tr-log-metric-sel')?.value;
+        if (!metId) {
+          toast('Selecione uma medida.');
+          return;
+        }
+        const metric = trState.metrics.find((m) => m.id === metId);
+        if (!metric || !currentUser) return;
+
+        const fieldDefs = metric.fields || [
+          { id: 'value', label: metric.name, unit: metric.unit },
+        ];
+        const values = fieldDefs.map((f) => {
+          const raw = document.getElementById(`tr-log-val-${f.id}`)?.value;
+          return {
+            fieldId: f.id,
+            label: f.label,
+            unit: f.unit || '',
+            value: raw !== '' ? parseFloat(raw) : null,
+          };
+        });
+        if (values.some((v) => v.value === null || isNaN(v.value))) {
+          toast('Preencha todos os valores.');
+          return;
+        }
+
+        const dtRaw = document.getElementById('tr-log-datetime')?.value;
+        if (!dtRaw) {
+          toast('Informe a data e hora.');
+          return;
+        }
+        const recordedAt = new Date(dtRaw);
+        const note = document.getElementById('tr-log-note')?.value.trim() || '';
+
+        try {
+          await trEntRef(currentUser.uid).add({
+            metricId: metId,
+            metricName: metric.name,
+            values,
+            note,
+            recordedAt,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+          toast('✅ Registro salvo!');
+          // Reset values, reset datetime to now
+          values.forEach((v) => {
+            const el = document.getElementById(`tr-log-val-${v.fieldId}`);
+            if (el) el.value = '';
+          });
+          const dtEl = document.getElementById('tr-log-datetime');
+          if (dtEl) dtEl.value = trNow();
+          const noteEl = document.getElementById('tr-log-note');
+          if (noteEl) noteEl.value = '';
+        } catch (e) {
+          console.error(e);
+          toast('Erro ao salvar.');
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      // TYPES (metric definitions)
+      // ══════════════════════════════════════════════════════
+      function trRenderTypes() {
+        const grid = document.getElementById('tr-types-grid');
+        if (!grid) return;
+        if (!trState.metrics.length) {
+          grid.innerHTML = `
+      <div class="cl-empty" style="grid-column:1/-1">
+        <div class="cl-empty-icon">📏</div>
+        <div class="cl-empty-title">Nenhuma medida ainda</div>
+        <div class="cl-empty-sub">Crie tipos como Peso, Pressão Arterial, Água ingerida…</div>
+      </div>`;
+          return;
+        }
+        grid.innerHTML = trState.metrics
+          .map((m) => {
+            const isComposite = m.fields && m.fields.length > 1;
+            const inactive = m.active === false;
+            const fields = isComposite
+              ? (m.fields || [])
+                  .map(
+                    (f) =>
+                      `<span class="tr-field-chip">${esc(f.label)}${f.unit ? ' · ' + esc(f.unit) : ''}</span>`,
+                  )
+                  .join('')
+              : `<span class="tr-field-chip">${m.unit || '—'}</span>`;
+
+            return `
+      <div class="tr-metric-card${inactive ? ' inactive' : ''}">
+        <div class="tr-metric-card-top">
+          <div>
+            <div class="tr-metric-name">${esc(m.name)}
+              ${inactive ? '<span class="cl-badge cl-badge-off" style="margin-left:6px">inativo</span>' : ''}
+            </div>
+            ${
+              isComposite
+                ? `<div class="tr-metric-unit">composta · ${m.fields.length} campos</div>`
+                : `<div class="tr-metric-unit">${m.unit || ''}</div>`
+            }
+          </div>
+          <div class="tr-metric-actions">
+            <button class="btn-icon" onclick="trOpenMetricModal('${esc(m.id)}')" title="Editar">✏️</button>
+            <button class="btn-icon danger" onclick="trDeleteMetric('${esc(m.id)}')" title="Excluir">✕</button>
+          </div>
+        </div>
+        ${m.description ? `<div class="tr-metric-desc">${esc(m.description)}</div>` : ''}
+        <div class="tr-metric-fields">${fields}</div>
+      </div>`;
+          })
+          .join('');
+      }
+
+      async function trDeleteMetric(id) {
+        if (
+          !confirm(
+            'Excluir esta medida? Os registros existentes não serão apagados.',
+          )
+        )
+          return;
+        if (!currentUser) return;
+        try {
+          await trMetRef(currentUser.uid).doc(id).delete();
+          toast('Medida excluída.');
+        } catch (e) {
+          console.error(e);
+          toast('Erro ao excluir.');
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      // HISTORY
+      // ══════════════════════════════════════════════════════
+      function trPopulateHistSelect() {
+        const sel = document.getElementById('tr-hist-metric');
+        if (!sel) return;
+        const cur = sel.value;
+        sel.innerHTML =
+          '<option value="">Todas as medidas</option>' +
+          trState.metrics
+            .map(
+              (m) =>
+                `<option value="${esc(m.id)}"${m.id === cur ? ' selected' : ''}>${esc(m.name)}</option>`,
+            )
+            .join('');
+      }
+
+      function trSetHistPeriod(p) {
+        trState.histPeriod = p;
+        ['week', 'month', '3m', 'all'].forEach((k) =>
+          document
+            .getElementById(`tr-hp-${k}`)
+            ?.classList.toggle('active', k === p),
+        );
+        trRenderHistory();
+      }
+
+      function trSetView(v) {
+        trState.histView = v;
+        document
+          .getElementById('tr-view-chart')
+          ?.classList.toggle('active', v === 'chart');
+        document
+          .getElementById('tr-view-table')
+          ?.classList.toggle('active', v === 'table');
+        trRenderHistory();
+      }
+
+      function trFilteredEntries() {
+        const metId = document.getElementById('tr-hist-metric')?.value || '';
+        const p = trState.histPeriod;
+        const now = new Date();
+        let since = null;
+        if (p === 'week') {
+          since = new Date(now);
+          since.setDate(now.getDate() - 7);
+        } else if (p === 'month') {
+          since = new Date(now);
+          since.setDate(now.getDate() - 30);
+        } else if (p === '3m') {
+          since = new Date(now);
+          since.setDate(now.getDate() - 90);
+        }
+
+        return trState.entries.filter((e) => {
+          if (metId && e.metricId !== metId) return false;
+          if (since) {
+            const d = e.recordedAt?.toDate
+              ? e.recordedAt.toDate()
+              : new Date(e.recordedAt);
+            if (d < since) return false;
+          }
+          return true;
+        });
+      }
+
+      function trRenderHistory() {
+        const wrap = document.getElementById('tr-history-content');
+        if (!wrap) return;
+        const entries = trFilteredEntries();
+
+        if (!entries.length) {
+          wrap.innerHTML = `
+      <div class="cl-empty" style="padding-top:32px">
+        <div class="cl-empty-icon">📊</div>
+        <div class="cl-empty-title">Sem registros no período</div>
+        <div class="cl-empty-sub">Use a aba <strong>Registrar</strong> para adicionar dados.</div>
+      </div>`;
+          return;
+        }
+
+        if (trState.histView === 'table') {
+          wrap.innerHTML = trBuildTable(entries);
+        } else {
+          wrap.innerHTML = trBuildCharts(entries);
+        }
+      }
+
+      // ─── Table ────────────────────────────────────────────
+      function trBuildTable(entries) {
+        const rows = [...entries].sort((a, b) => {
+          const da = a.recordedAt?.toDate
+            ? a.recordedAt.toDate()
+            : new Date(a.recordedAt);
+          const db_ = b.recordedAt?.toDate
+            ? b.recordedAt.toDate()
+            : new Date(b.recordedAt);
+          return db_ - da;
+        });
+        return `
+    <div class="tr-table-wrap">
+      <table class="tr-table">
+        <thead>
+          <tr>
+            <th>Data / hora</th>
+            <th>Medida</th>
+            <th>Valores</th>
+            <th>Obs.</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows
+            .map((e) => {
+              const vals = (e.values || [])
+                .map(
+                  (v) =>
+                    `${v.label}: <strong>${v.value}</strong>${v.unit ? ' ' + esc(v.unit) : ''}`,
+                )
+                .join(' &nbsp;|&nbsp; ');
+              return `
+              <tr>
+                <td class="tr-date">${trFmtDate(e.recordedAt)}</td>
+                <td>${esc(e.metricName || '—')}</td>
+                <td class="tr-val">${vals}</td>
+                <td style="color:var(--muted);font-size:12px">${esc(e.note || '')}</td>
+                <td>
+                  <button class="btn-icon danger" onclick="trDeleteEntry('${esc(e.id)}')" title="Excluir">✕</button>
+                </td>
+              </tr>`;
+            })
+            .join('')}
+        </tbody>
+      </table>
+    </div>`;
+      }
+
+      // ─── Charts ───────────────────────────────────────────
+      function trBuildCharts(entries) {
+        // Group by metricId, then build one chart per metric
+        const byMetric = {};
+        entries.forEach((e) => {
+          if (!byMetric[e.metricId]) byMetric[e.metricId] = [];
+          byMetric[e.metricId].push(e);
+        });
+        return Object.entries(byMetric)
+          .map(([metId, ents]) => {
+            const metric = trState.metrics.find((m) => m.id === metId);
+            return trBuildLineChart(metric, ents);
+          })
+          .join('');
+      }
+
+      function trBuildLineChart(metric, entries) {
+        if (!entries.length) return '';
+        const name = metric?.name || 'Medida';
+
+        // Sort by date asc
+        const sorted = [...entries].sort((a, b) => {
+          const da = a.recordedAt?.toDate
+            ? a.recordedAt.toDate()
+            : new Date(a.recordedAt);
+          const db_ = b.recordedAt?.toDate
+            ? b.recordedAt.toDate()
+            : new Date(b.recordedAt);
+          return da - db_;
+        });
+
+        // Discover all fieldIds
+        const fieldIds = [];
+        const fieldLabels = {};
+        const fieldUnits = {};
+        sorted.forEach((e) =>
+          (e.values || []).forEach((v) => {
+            if (!fieldIds.includes(v.fieldId)) {
+              fieldIds.push(v.fieldId);
+              fieldLabels[v.fieldId] = v.label;
+              fieldUnits[v.fieldId] = v.unit || '';
+            }
+          }),
+        );
+
+        // Series: one array per field
+        const series = fieldIds.map((fid) =>
+          sorted
+            .map((e) => {
+              const v = (e.values || []).find((v) => v.fieldId === fid);
+              return {
+                ts: e.recordedAt?.toDate
+                  ? e.recordedAt.toDate()
+                  : new Date(e.recordedAt),
+                val: v ? v.value : null,
+              };
+            })
+            .filter((p) => p.val !== null),
+        );
+
+        // Chart geometry
+        const W = 560,
+          H = 180,
+          PAD_L = 38,
+          PAD_R = 12,
+          PAD_T = 10,
+          PAD_B = 22;
+        const cW = W - PAD_L - PAD_R,
+          cH = H - PAD_T - PAD_B;
+
+        const allVals = series.flat().map((p) => p.val);
+        let vMin = Math.min(...allVals),
+          vMax = Math.max(...allVals);
+        if (vMin === vMax) {
+          vMin -= 1;
+          vMax += 1;
+        }
+        const vRange = vMax - vMin;
+        const allTs = series.flat().map((p) => p.ts.getTime());
+        const tMin = Math.min(...allTs),
+          tMax = Math.max(...allTs);
+        const tRange = tMax === tMin ? 1 : tMax - tMin;
+
+        const px = (ts) => PAD_L + ((ts.getTime() - tMin) / tRange) * cW;
+        const py = (val) => PAD_T + (1 - (val - vMin) / vRange) * cH;
+
+        // Y grid lines (4 lines)
+        const yLines = [0, 0.33, 0.67, 1]
+          .map((f) => {
+            const y = PAD_T + (1 - f) * cH;
+            const val = (vMin + f * vRange).toFixed(1);
+            return `<line class="tr-grid-line" x1="${PAD_L}" y1="${y}" x2="${W - PAD_R}" y2="${y}"/>
+            <text class="tr-axis-label" x="${PAD_L - 4}" y="${y + 3}" text-anchor="end">${val}</text>`;
+          })
+          .join('');
+
+        // X labels (up to 6 evenly-spaced)
+        const xCount = Math.min(sorted.length, 6);
+        const step = Math.max(1, Math.floor(sorted.length / xCount));
+        const xLabels = sorted
+          .filter((_, i) => i % step === 0)
+          .map((e) => {
+            const d = e.recordedAt?.toDate
+              ? e.recordedAt.toDate()
+              : new Date(e.recordedAt);
+            const x = px(d);
+            return `<text class="tr-axis-label" x="${x}" y="${H - 4}" text-anchor="middle">${trFmtShort(e.recordedAt)}</text>`;
+          })
+          .join('');
+
+        // Lines + dots per series
+        const paths = series
+          .map((pts, si) => {
+            if (!pts.length) return '';
+            const color = CHART_COLORS[si % CHART_COLORS.length];
+            const d = pts
+              .map(
+                (p, i) =>
+                  `${i === 0 ? 'M' : 'L'}${px(p.ts).toFixed(1)},${py(p.val).toFixed(1)}`,
+              )
+              .join(' ');
+            const dots = pts
+              .map(
+                (p) =>
+                  `<circle cx="${px(p.ts).toFixed(1)}" cy="${py(p.val).toFixed(1)}" r="3.5" fill="${color}" stroke="var(--bg)" stroke-width="1.5">
+         <title>${fieldLabels[fieldIds[si]]}: ${p.val} ${fieldUnits[fieldIds[si]]} — ${p.ts.toLocaleDateString('pt-BR')}</title>
+       </circle>`,
+              )
+              .join('');
+            return `<path class="tr-line" d="${d}" stroke="${color}"/>${dots}`;
+          })
+          .join('');
+
+        // Legend
+        const legend = fieldIds
+          .map((fid, si) => {
+            const color = CHART_COLORS[si % CHART_COLORS.length];
+            const unit = fieldUnits[fid] ? ` (${fieldUnits[fid]})` : '';
+            return `<div class="tr-legend-item">
+              <div class="tr-legend-dot" style="background:${color}"></div>
+              ${esc(fieldLabels[fid])}${unit}
+            </div>`;
+          })
+          .join('');
+
+        return `
+    <div class="tr-chart-card">
+      <div class="tr-chart-header">
+        <span class="tr-chart-title">${esc(name)}</span>
+        <span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">${entries.length} registro${entries.length !== 1 ? 's' : ''}</span>
+      </div>
+      <div style="overflow-x:auto">
+        <svg class="tr-chart-svg" viewBox="0 0 ${W} ${H}">
+          ${yLines}
+          ${xLabels}
+          ${paths}
+        </svg>
+      </div>
+      <div class="tr-chart-legend">${legend}</div>
+    </div>`;
+      }
+
+      async function trDeleteEntry(id) {
+        if (!confirm('Excluir este registro?')) return;
+        if (!currentUser) return;
+        try {
+          await trEntRef(currentUser.uid).doc(id).delete();
+          toast('Registro excluído.');
+        } catch (e) {
+          console.error(e);
+          toast('Erro ao excluir.');
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      // MODAL — Metric definition
+      // ══════════════════════════════════════════════════════
+      function trOpenMetricModal(metId = null) {
+        const met = metId ? trState.metrics.find((m) => m.id === metId) : null;
+        const isComposite = met && met.fields && met.fields.length > 1;
+        const bd = document.createElement('div');
+        bd.className = 'modal-backdrop';
+
+        const defaultFields = met
+          ? met.fields || [
+              { id: uid_(), label: met.name, unit: met.unit || '' },
+            ]
+          : [{ id: uid_(), label: '', unit: '' }];
+
+        bd.innerHTML = `
+    <div class="modal modal-cl" role="dialog" aria-modal="true">
+      <h2>${met ? 'Editar medida' : 'Nova medida'}</h2>
+
+      <div class="field" style="margin-bottom:12px">
+        <label class="detail-label">Nome</label>
+        <input type="text" id="trm-name" placeholder="Ex: Peso, Pressão Arterial" value="${met ? esc(met.name) : ''}" />
+      </div>
+      <div class="field" style="margin-bottom:12px">
+        <label class="detail-label">Descrição (opcional)</label>
+        <input type="text" id="trm-desc" placeholder="Para que serve esta medida?" value="${met ? esc(met.description || '') : ''}" />
+      </div>
+
+      <!-- Composite toggle -->
+      <div class="cl-tpl-active-row" style="margin-bottom:16px">
+        <span class="detail-label">Tipo</span>
+        <label class="cl-toggle-wrap">
+          <input type="checkbox" id="trm-composite" ${isComposite ? 'checked' : ''} onchange="trToggleCompositeFields()" />
+          <span class="cl-toggle-track"></span>
+          <span class="cl-toggle-label">Medida composta (múltiplos campos)</span>
+        </label>
+      </div>
+
+      <!-- Simple: name + unit -->
+      <div id="trm-simple-wrap" style="${isComposite ? 'display:none' : ''}">
+        <div class="field" style="margin-bottom:12px">
+          <label class="detail-label">Unidade de medida</label>
+          <input type="text" id="trm-unit" placeholder="Ex: kg, mmHg, L, bpm"
+                 value="${met && !isComposite ? esc(met.unit || '') : ''}" />
+        </div>
+      </div>
+
+      <!-- Composite: fields list -->
+      <div id="trm-composite-wrap" style="${isComposite ? '' : 'display:none'}">
+        <label class="detail-label" style="display:block;margin-bottom:8px">Campos</label>
+        <div id="trm-fields-list" class="tr-fields-list">
+          ${defaultFields.map((f) => trFieldRowHTML(f.id, f.label, f.unit)).join('')}
+        </div>
+        <button class="btn btn-ghost" style="margin-top:8px;font-size:12px;padding:5px 12px"
+                onclick="trAddFieldRow()">+ Adicionar campo</button>
+      </div>
+
+      <div class="cl-tpl-active-row" style="margin:16px 0">
+        <span class="detail-label">Status</span>
+        <label class="cl-toggle-wrap">
+          <input type="checkbox" id="trm-active" ${!met || met.active !== false ? 'checked' : ''} />
+          <span class="cl-toggle-track"></span>
+          <span class="cl-toggle-label">Ativo</span>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="this.closest('.modal-backdrop').remove()">Cancelar</button>
+        <button class="btn btn-primary" id="trm-save-btn" onclick="trSaveMetric('${metId || ''}')">
+          ${met ? 'Salvar alterações' : 'Criar medida'}
+        </button>
+      </div>
+    </div>`;
+
+        document.body.appendChild(bd);
+        document.getElementById('trm-name').focus();
+        bd.addEventListener('click', (e) => {
+          if (e.target === bd) bd.remove();
+        });
+        bd.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') bd.remove();
+        });
+      }
+
+      function trFieldRowHTML(id, label = '', unit = '') {
+        return `
+    <div class="tr-field-row" data-field-id="${id}">
+      <span style="color:var(--muted);font-size:11px;flex-shrink:0">☰</span>
+      <input type="text" class="trm-field-label" data-field-id="${id}"
+             placeholder="Nome do campo (ex: Sistólica)" value="${esc(label)}" style="flex:2" />
+      <input type="text" class="trm-field-unit field-unit" data-field-id="${id}"
+             placeholder="Unidade" value="${esc(unit)}" />
+      <button class="btn-icon danger" onclick="this.closest('.tr-field-row').remove()" title="Remover">✕</button>
+    </div>`;
+      }
+
+      function trToggleCompositeFields() {
+        const on = document.getElementById('trm-composite').checked;
+        document.getElementById('trm-simple-wrap').style.display = on
+          ? 'none'
+          : '';
+        document.getElementById('trm-composite-wrap').style.display = on
+          ? ''
+          : 'none';
+      }
+
+      function trAddFieldRow() {
+        const list = document.getElementById('trm-fields-list');
+        const d = document.createElement('div');
+        d.innerHTML = trFieldRowHTML(uid_());
+        list.appendChild(d.firstElementChild);
+        list.lastElementChild.querySelector('.trm-field-label').focus();
+      }
+
+      async function trSaveMetric(metId) {
+        const name = document.getElementById('trm-name').value.trim();
+        const desc = document.getElementById('trm-desc').value.trim();
+        const active = document.getElementById('trm-active').checked;
+        const isComp = document.getElementById('trm-composite').checked;
+        if (!name) {
+          document.getElementById('trm-name').focus();
+          return;
+        }
+        if (!currentUser) return;
+
+        let fields;
+        if (isComp) {
+          const rows = document
+            .getElementById('trm-fields-list')
+            .querySelectorAll('.tr-field-row');
+          fields = Array.from(rows)
+            .map((row, idx) => ({
+              id: row.dataset.fieldId || uid_(),
+              label: row.querySelector('.trm-field-label').value.trim(),
+              unit: row.querySelector('.trm-field-unit').value.trim(),
+              order: idx,
+            }))
+            .filter((f) => f.label.length > 0);
+          if (!fields.length) {
+            toast('Adicione pelo menos um campo.');
+            return;
+          }
+        } else {
+          const unit = document.getElementById('trm-unit').value.trim();
+          fields = [{ id: 'value', label: name, unit, order: 0 }];
+        }
+
+        const btn = document.getElementById('trm-save-btn');
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = 'Salvando…';
+        }
+
+        const data = {
+          name,
+          description: desc,
+          active,
+          fields,
+          unit: isComp ? '' : fields[0]?.unit || '',
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+        try {
+          if (metId) {
+            await trMetRef(currentUser.uid).doc(metId).update(data);
+            toast('Medida atualizada!');
+          } else {
+            data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            await trMetRef(currentUser.uid).add(data);
+            toast('✅ Medida criada!');
+          }
+          document.querySelector('.modal-backdrop')?.remove();
+        } catch (e) {
+          console.error(e);
+          toast('Erro ao salvar medida.');
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = metId ? 'Salvar alterações' : 'Criar medida';
+          }
+        }
       }
 
       window.addEventListener('online', () => {
